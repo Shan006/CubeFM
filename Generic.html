@@ -1,0 +1,881 @@
+<style>
+  input:focus,
+  select:focus {
+    outline: none;
+    border: none;
+    /* You can also set other styles like padding and background here */
+  }
+  .btn {
+    margin: 5px;
+  }
+  #container {
+    display: flex;
+    flex-direction: column;
+  }
+  .nested-container {
+    margin-left: 20px;
+    border-left: 1px dashed gray;
+    padding-left: 10px;
+    position: relative;
+  }
+  .remove-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  .custom-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .custom-table th,
+  .custom-table td {
+    padding: 2px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .custom-table th {
+    border-right: 1px solid #ccc;
+  }
+
+  #custom-loader {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .loader-spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #333;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 2s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+  /* Hide the default dropdown arrow */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    background-position: right center;
+    background-repeat: no-repeat;
+  }
+
+  /* Add a custom icon for the select */
+  select::after {
+    content: "\f078"; /* Unicode for the fa-chevron-down icon */
+    font-family: "Font Awesome 5 Free"; /* Use the appropriate Font Awesome font-family */
+    position: absolute;
+    right: 0.5rem; /* Adjust as needed */
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #333; /* Adjust icon color as needed */
+  }
+</style>
+<form id="data-form">
+  <div id="custom-loader">
+    <div class="loader-spinner"></div>
+  </div>
+<input type="hidden" name="alert_id" id="alert_id" value=""></input>
+<input type="hidden" name = "q_filter" id="q_filter" value=""></input>
+<input type="hidden" name="q_criteria" id="q_criteria" value=""></input>
+<input type="hidden" name="identifier" id="identifier" value=""></input>
+<!-- Loader Spinner -->
+<div class="general h-32 bg-gray-100 p-2">
+  <div class="flex items-center">
+    <i class="fas fa-info-circle mr-2 text-blue-300"></i>
+    <h1>General</h1>
+  </div>
+  <table class="mt-2">
+    <tr>
+      <td><label for="name" class="label">Name:</label></td>
+      <td>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="input border border-gray-400 ml-3"
+          style="width: 60rem"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td><label for="type" class="label">Type:</label></td>
+      <td>
+        <select
+          id="type"
+          name="type"
+          class="input border border-gray-400 ml-3"
+          style="width: 60rem"
+        >
+          <option value="Select">Select</option>
+          <option value="Generic Alarm">Generic Alarm</option>
+          <option value="Global Fraud">Global Fraud</option>
+          <option value="Same Called Number">Same Called Number</option>
+          <option value="Destination Fraud">Destination Fraud</option>
+          <option value="Single Call">Single Call</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><label for="severity" class="label">Severity:</label></td>
+      <td>
+        <select
+          id="severity"
+          name="severity"
+          class="input border border-gray-400 ml-3"
+          style="width: 60rem"
+        >
+          <option value="Select">Select</option>
+          <option value="Lowest (1)">Lowest (1)</option>
+          <option value="Low (2)">Low (2)</option>
+          <option value="Medium (3)">Medium (3)</option>
+          <option value="High (4)">High (4)</option>
+          <option value="Highest (4)">Highest (4)</option>
+        </select>
+      </td>
+    </tr>
+  </table>
+</div>
+<!-- First -->
+<div
+  class="limits h-48 bg-gray-100 border-t-4 border-white p-2 overflow-y-auto"
+>
+  <div class="flex items-center">
+    <i class="fas fa-chart-line mr-2 text-red-700"></i>
+    <h1>Limits</h1>
+  </div>
+  <table class="custom-table mt-2">
+    <colgroup>
+      <col style="width: 1%" />
+      <col style="width: 80%" />
+      <col />
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</div>
+<!-- Second -->
+<div class="rules h-48 bg-gray-100 border-t-4 border-white p-2 overflow-auto">
+  <div class="flex items-center">
+    <i class="fas fa-ruler mr-2 text-purple-500"></i>
+    <h1>Rules</h1>
+  </div>
+  <div class="flex items-center mt-2">
+    <select class="bg-gray-100" id="globalGroupOperator">
+      <option value="">Select</option>
+      <option value="OR">OR</option>
+      <option value="AND">AND</option>
+    </select>
+    <i
+      class="fas fa-balance-scale ml-3 text-green-900 cursor-pointer"
+      id="rule"
+    ></i>
+    <i class="fas fa-users ml-3 text-green-600 cursor-pointer" id="group"></i>
+  </div>
+  <div class="overflow-y-auto mt-1" id="container"></div>
+</div>
+<!-- Third -->
+<div class="comments h-24 bg-gray-100 border-t-4 border-white p-2">
+  <div class="flex items-center">
+    <i class="fas fa-comments mr-2 text-blue-700"></i>
+    <h1>Comments</h1>
+  </div>
+  <textarea
+    class="w-full mt-2 p-2 border border-gray-400 rounded-md"
+    rows="1"
+    placeholder="Write your comment here..."
+  ></textarea>
+</div>
+<!-- Fourth -->
+<div class="comments h-10 bg-gray-100 border-t-4 border-white p-1">
+  <div class="flex items-center float-right mr-4 mt-1 cursor-pointer" id="data">
+    <button class="flex items-center" type="submit">
+    <i class="fas fa-save mr-2 text-green-600"></i>
+    <h1>Save & Close</h1>
+  </button>
+  </div>
+  <div class="flex items-center float-right mr-4 mt-1 cursor-pointer" id="apply">
+    <i class="fas fa-save mr-2 text-green-600"></i>
+    <h1>Apply</h1>
+  </div>
+</div>
+<!-- Fifth -->
+</form>
+
+<script>
+  const container = document.getElementById("container");
+  let selectedData = [];
+  let currentClause = "";
+
+  const ApplyBtn = document.getElementById("apply");
+
+  ApplyBtn.addEventListener("click", () => {
+    console.log("Data", selectedData);
+    console.log(`Current Clause: (${currentClause})`);
+    const globalGroupOperator = document.getElementById(
+      "globalGroupOperator").value;
+    const whereClause = generateWhereClause(selectedData, globalGroupOperator);
+    console.log(whereClause);
+  });
+
+  function showLoader() {
+    document.getElementById("custom-loader").style.display = "block";
+  }
+
+  function hideLoader() {
+    document.getElementById("custom-loader").style.display = "none";
+  }
+
+
+  document.getElementById("data-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      showLoader();
+
+      const globalGroupOperator = document.getElementById(
+      "globalGroupOperator").value;
+      const whereClause = generateWhereClause(selectedData, globalGroupOperator);
+      document.getElementById("q_filter").value = whereClause;
+      // document.getElementById("q_criteria").value = currentClause;
+      document.getElementById("q_criteria").value = `(${currentClause})`;
+
+      console.log("Data : ",selectedData);
+      console.log("Clause : ",whereClause);
+      console.log("Threshold : ",document.getElementById("q_criteria").value);
+      console.log("Identifier : ",document.getElementById("identifier").value);
+
+      const formData = new FormData(event.target);
+
+      fetch("AddOrUpdate.php", {
+        method: "POST",
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        location.reload();
+        hideLoader()
+        console.log(data.message);
+      })
+      .catch(error => {
+        hideLoader();
+        console.error("Error:", error);
+      });
+    });
+
+  const tableBody = document.getElementById("table-body");
+
+  const rowData = [
+    { label: "Time Period In Seconds", row: 1 },
+    { label: "Amount", row: 2 },
+    { label: "DATAVOLUME", row: 3 },
+    { label: "Number of Events", row: 4 },
+    { label: "SERVEDMSISDN", row: 5 },
+    { label: "Duration In Seconds", row: 6 },
+    { label: "Percentage of Amount", row: 7 },
+    { label: "Volume Downloaded In Bytes", row: 8 },
+    { label: "Volume Uploaded In Bytes", row: 9 },
+    { label: "Volume Total In Bytes", row: 10 },
+    { label: "Percentage of duration", row: 11 },
+    { label: "Volume downloaded higher than uploaded (present)", row: 12 },
+    { label: "Volume downloaded higher than downloaded (present)", row: 13 },
+    // Add more rows as needed
+  ];
+
+  // Initialize an empty array to store selected checkboxes
+const selectedCheckboxes = [];
+
+for (const data of rowData) {
+  const row = document.createElement("tr");
+
+  const checkboxCell = document.createElement("td");
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.classList.add("checkbox");
+  checkbox.dataset.row = data.row;
+  checkboxCell.appendChild(checkbox);
+  row.appendChild(checkboxCell);
+
+  const nameLabelCell = document.createElement("td");
+  nameLabelCell.textContent = data.label;
+  row.appendChild(nameLabelCell);
+
+  const valueCell = document.createElement("td");
+  const valueInput = document.createElement("input");
+  valueInput.type = "number";
+  valueInput.classList.add("value-input");
+  valueInput.dataset.row = data.row;
+  valueCell.appendChild(valueInput);
+  row.appendChild(valueCell);
+
+  tableBody.appendChild(row);
+
+  checkbox.addEventListener("change", (event) => {
+    const row = event.target.dataset.row;
+    const name = rowData.find((data) => data.row === parseInt(row)).label;
+    const value = document.querySelector(
+      `.value-input[data-row="${row}"]`
+    ).value;
+
+    console.log("name", name);
+    console.log("value", value);
+
+    if (event.target.checked) {
+      selectedCheckboxes.push({ name, value });
+    } else {
+      const index = selectedCheckboxes.findIndex(
+        (item) => item.name === name && item.value === value
+      );
+      if (index !== -1) {
+        selectedCheckboxes.splice(index, 1);
+      }
+    }
+
+    // Build the WHERE clause based on selected checkboxes
+    currentClause = selectedCheckboxes
+      .map((checkbox) => {
+        if (checkbox.name === "Number of Events") {
+          return `count(${checkbox.name}) >= '${checkbox.value}'`;
+        } else {
+          return `sum(${checkbox.name}) >= '${checkbox.value}'`;
+        }
+      })
+      .join(" AND ");
+  });
+}
+
+
+
+
+  const column = [
+    { label: "Select Source", value: "" },
+    { label: "CDR", value: "CDR", icon: "fas fa-phone" },
+    { label: "Subscriber", value: "Subscriber", icon: "fas fa-check" },
+    { label: "Subset", value: "Subset", icon: "fas fa-check" },
+  ];
+
+  // CDR All Select Box Options
+  const CDRSelectOptions = {
+    field: [
+      { label: "Select Field", value: "" },
+      { label: "A Number", value: "ANumber" },
+      { label: "EVENTTYPE", value: "EVENTTYPE" },
+      { label: "CALLTYPE", value: "CALLTYPE" },
+      { label: "Amount", value: "Amount" },
+      // ... Other field options
+    ],
+    operator: [
+      { label: "Select Operator", value: "" },
+      { label: "is equal to", value: "=" },
+      { label: "is not equal to", value: "!=" },
+      { label: "is greater than", value: ">" },
+      { label: "is less than", value: "<" },
+      // ... Other operator options
+    ],
+    source: [
+      { label: "Select Source", value: "" },
+      { label: "Value", value: "Value" },
+      { label: "CDR", value: "CDR" },
+      { label: "Subscriber", value: "Subscriber" },
+      // ... Other source options
+    ],
+    CDRValue: [
+      { label: "Select Value", value: "" },
+      { label: "A Number", value: "ANumber" },
+      { label: "Amount", value: "Amount" },
+      { label: "B Handset ID", value: "BHandsetID" },
+      // ... Other value options
+    ],
+    SubscriberValue: [
+      { label: "Select Value", value: "" },
+      { label: "AccountID", value: "AccountID" },
+      { label: "Activation Date", value: "ActivationDate" },
+      { label: "Balance", value: "Balance" },
+      // ... Other value options
+    ],
+  };
+
+  // Subscriber All Select Box Options
+  const SubscriberSelectOptions = {
+    field: [
+      { label: "Select Field", value: "" },
+      { label: "A Number is", value: "ANumber" },
+      { label: "Amount", value: "Amount" },
+      // ... Other field options
+    ],
+    operator: [
+      { label: "Select Operator", value: "" },
+      { label: "is equal to", value: "=" },
+      { label: "is not equal to", value: "!=" },
+      { label: "is greater than", value: ">" },
+      { label: "is less than", value: "<" },
+      // ... Other operator options
+    ],
+    source: [
+      { label: "Select Source", value: "" },
+      { label: "Value", value: "Value" },
+      { label: "CDR", value: "CDR" },
+      { label: "Subscriber", value: "Subscriber" },
+      // ... Other source options
+    ],
+    CDRValue: [
+      { label: "Select Value", value: "" },
+      { label: "A Number", value: "ANumber" },
+      { label: "Amount", value: "Amount" },
+      { label: "B Handset ID", value: "BHandsetID" },
+      // ... Other value options
+    ],
+    SubscriberValue: [
+      { label: "Select Value", value: "" },
+      { label: "AccountID", value: "AccountID" },
+      { label: "Activation Date", value: "ActivationDate" },
+      { label: "Balance", value: "Balance" },
+      // ... Other value options
+    ],
+  };
+
+  // Subset All Select Box Options
+  const SubsetSelectOptions = {
+    field: [
+      { label: "Select Subset", value: "" },
+      { label: "Calltype = All", value: "Calltype=All" },
+      {
+        label: "Calltype = International",
+        value: "Calltype = International",
+      },
+      // ... Other field options
+    ],
+    operator: [
+      { label: "Select Operator", value: "" },
+      { label: "is true", value: "istrue" },
+      { label: "is false", value: "isfalse" },
+    ],
+  };
+
+  const createSelectOptions = (optionsData, changeHandler, textColor) => {
+    const select = document.createElement("select");
+
+    optionsData.forEach((optionData) => {
+      const optionElement = document.createElement("option");
+      optionElement.textContent = optionData.label;
+      optionElement.value = optionData.value;
+
+      if (optionData.icon) {
+        const iconClasses = optionData.icon.split(" "); // Split classes
+        const iconElement = document.createElement("i");
+
+        iconClasses.forEach((iconClass) => {
+          iconElement.classList.add(iconClass); // Add individual classes
+        });
+
+        optionElement.appendChild(iconElement);
+      }
+
+      select.appendChild(optionElement);
+    });
+
+    select.addEventListener("change", changeHandler);
+    select.style.backgroundColor = "#f4f4f5";
+
+    if (textColor) {
+      select.style.color = textColor;
+    }
+
+    return select;
+  };
+
+  const createDOMElement = (tag, attributes) => {
+    const element = document.createElement(tag);
+    for (const key in attributes) {
+      element.setAttribute(key, attributes[key]);
+    }
+    return element;
+  };
+
+  const createRule = (group,ruleData) => {
+    let columnData;
+    let fieldData;
+
+    const newRule = ruleData
+  ? {
+      type: "Single",
+      field: ruleData.field,
+      operator: ruleData.operator,
+      value: ruleData.value,
+    }
+  : {
+      type: "Single",
+      column: "",
+      field: "",
+      operator: "",
+      source: "",
+      value: "",
+    };
+
+    if (group) {
+      group.rules.push(newRule);
+    } else {
+      selectedData.push(newRule);
+    }
+
+    const ruleContainer = document.createElement("div");
+    // ruleContainer.classList.add("nested-container");
+
+    const arrow = createDOMElement("i", {
+      class: `fas fa-arrow-right mr-2 ml-${group ? group.margin + 2 : 0}`,
+    });
+    ruleContainer.appendChild(arrow);
+
+    const removeBtn = document.createElement("i");
+    removeBtn.classList.add(
+      "fas",
+      "fa-times",
+      "custom-red-icon",
+      "text-red-700",
+      "ml-4",
+      "mr-4",
+      "cursor-pointer"
+    );
+    removeBtn.addEventListener("click", () =>
+      removeGroupOrRule(ruleContainer, group, newRule)
+    );
+    ruleContainer.appendChild(removeBtn);
+
+    const ruleToUpdate = group
+  ? group.rules[group.rules.length - 1]
+  : selectedData[selectedData.length - 1];
+
+  function showSelectValue(value,options) {
+    // Remove the old field select box if it exists
+    const oldSelectValue = ruleContainer.querySelector(".value-select");
+        if (oldSelectValue) {
+          oldSelectValue.remove();
+        }
+      const selectValue = createSelectOptions(
+          options,
+          (event) => {
+              ruleToUpdate.value = event.target.value;
+          },"gray"
+      );
+      selectValue.classList.add("value-select");
+      if(value){
+        selectValue.value = value;
+      }
+      ruleContainer.appendChild(selectValue);
+    }
+
+  function showInputValue(value) {
+    // Remove the old field select box if it exists
+    const oldSelectValue = ruleContainer.querySelector(".value-select");
+        if (oldSelectValue) {
+          oldSelectValue.remove();
+        }
+    const inputValue = "text";
+    const filterValue = createDOMElement("input", {
+    type: inputValue,
+    placeholder: "Enter Value",
+    class: "bg-gray-100",
+    });
+    filterValue.addEventListener("input", (event)=> {
+    ruleToUpdate.value = event.target.value;
+    });
+    filterValue.classList.add("value-select");
+    if(value){
+      filterValue.value = value;
+    }
+    ruleContainer.appendChild(filterValue);
+  }
+  function showSelectSource(value,options) {
+    // Remove the old field select box if it exists
+    const oldSelectSource = ruleContainer.querySelector(".source-select");
+        if (oldSelectSource) {
+          oldSelectSource.remove();
+        }
+      const selectSource = createSelectOptions(
+          options,
+          (event) => {
+              ruleToUpdate.source = event.target.value;
+              if (event.target.value === "Value") {
+                showInputValue(null);
+              }else if(event.target.value === "CDR"){
+                showSelectValue(null,CDRSelectOptions.CDRValue)
+              }else{
+                showSelectValue(null,SubscriberSelectOptions.SubscriberValue);
+              }
+          },"gray"
+      );
+      selectSource.classList.add("source-select");
+      if(value){
+        selectSource.value = value;
+      }
+      ruleContainer.appendChild(selectSource);
+    }
+
+    function showSelectOperator(value,options) {
+      // Remove the old field select box if it exists
+      const oldSelectOperator = ruleContainer.querySelector(".operator-select");
+        if (oldSelectOperator) {
+          oldSelectOperator.remove();
+        }
+      const selectOperator = createSelectOptions(
+          options,
+          (event) => {
+              ruleToUpdate.operator = event.target.value;
+              if (event.target.value) {
+              if(ruleToUpdate.column === "Subset"){
+                null;
+              }else{
+              showSelectSource(null,CDRSelectOptions.source); // Function to show the selectField
+              }
+            }
+          },"green"
+      );
+      selectOperator.classList.add("operator-select");
+      if(value){
+        selectOperator.value = value;
+      }
+      ruleContainer.appendChild(selectOperator);
+    }
+
+    function showSelectField(value,options) {
+      // Remove the old field select box if it exists
+      const oldSelectField = ruleContainer.querySelector(".field-select");
+        if (oldSelectField) {
+          oldSelectField.remove();
+        }
+      const selectField = createSelectOptions(
+          options,
+          (event) => {
+              ruleToUpdate.field = event.target.value;
+              if (event.target.value) {
+                if(ruleToUpdate.column === "Subset"){
+                  showSelectOperator(null,SubsetSelectOptions.operator); 
+                }
+                else{
+                showSelectOperator(null,CDRSelectOptions.operator);
+                }
+              }
+          },"blue"
+      );
+      selectField.classList.add("field-select");
+      if(value){
+        selectField.value = value;
+      }
+      ruleContainer.appendChild(selectField);
+    }
+
+    if(!ruleData){
+    const selectColumn = createSelectOptions(
+      column,
+      (event) => {
+          ruleToUpdate.column = event.target.value;
+          if (event.target.value === "CDR") {
+              showSelectField(null,CDRSelectOptions.field);
+          }else if(event.target.value === "Subscriber"){
+            showSelectField(null,SubscriberSelectOptions.field);
+          }else{
+            showSelectField(null,SubsetSelectOptions.field);
+          }
+      },
+      "gray"
+    );
+
+    ruleContainer.appendChild(selectColumn);
+  }
+
+    if(ruleData){
+      // selectColumn.value = ruleData.column;
+      // if(ruleData.column === "CDR"){
+        console.log("RuleData",ruleData)
+        showSelectField(ruleData.field,CDRSelectOptions.field);
+      // }else if(ruleData.column === "Subscriber"){
+      //   showSelectField(ruleData.field,SubscriberSelectOptions.field);
+      // }else{
+      //   showSelectField(ruleData.field,SubsetSelectOptions.field);
+      // }
+      showSelectOperator(ruleData.operator,CDRSelectOptions.operator);
+      // showSelectSource(ruleData.source,CDRSelectOptions.source);
+      // if(ruleData.source === "Value"){
+        showInputValue(ruleData.value);
+      // }else if(ruleData.source === "CDR"){
+      //   showSelectValue(ruleData.value,CDRSelectOptions.CDRValue);
+      // }else{
+      //   showSelectValue(ruleData.value,SubscriberSelectOptions.SubscriberValue);
+      // }
+    }
+    
+    container.appendChild(ruleContainer);
+  };
+
+  let m = 0;
+
+  const createGroup = (parentGroup,groupData) => {
+    const newGroup = {
+      type: "Group",
+      groupOperator: "AND",
+      rules: [],
+      margin: parentGroup ? (m += 4) : (m = 0),
+    };
+
+    if (parentGroup) {
+      parentGroup.rules.push(newGroup);
+    } else {
+      selectedData.push(newGroup);
+    }
+
+    const groupContainer = document.createElement("div");
+    // groupContainer.classList.add("nested-container");
+
+    const arrow = createDOMElement("i", {
+      class: `fas fa-arrow-right mr-2 ml-${m}`,
+    });
+    groupContainer.appendChild(arrow);
+
+    const removeBtn = document.createElement("i");
+    removeBtn.classList.add(
+      "fas",
+      "fa-times",
+      "custom-red-icon",
+      "text-red-700",
+      "ml-4",
+      "mr-4",
+      "cursor-pointer"
+    );
+    removeBtn.addEventListener("click", () =>
+      removeGroupOrRule(groupContainer, parentGroup, newGroup)
+    );
+    groupContainer.appendChild(removeBtn);
+
+    // Select box for OR/AND
+    const selectOptions = [
+      { label: "select", value: "" },
+      { label: "OR", value: "OR" },
+      { label: "AND", value: "AND" },
+    ];
+    const selectElement = createSelectOptions(
+      selectOptions,
+      (event) => {
+        if (parentGroup) {
+          parentGroup.rules[parentGroup.rules.length - 1].groupOperator =
+            event.target.value;
+        } else {
+          selectedData[selectedData.length - 1].groupOperator =
+            event.target.value;
+        }
+      },
+      "black"
+    );
+    groupContainer.appendChild(selectElement);
+
+    if(groupData){
+      selectElement.value = groupData.groupOperator;
+    }
+
+    const rule = document.createElement("i");
+    rule.classList.add(
+      "fas",
+      "fa-balance-scale",
+      "ml-3",
+      "text-green-900",
+      "cursor-pointer"
+    );
+    rule.addEventListener("click", () => createRule(newGroup));
+    groupContainer.appendChild(rule);
+
+    const group = document.createElement("i");
+    group.classList.add(
+      "fas",
+      "fa-users",
+      "ml-3",
+      "text-green-600",
+      "cursor-pointer"
+    );
+    group.addEventListener("click", () => createGroup(newGroup));
+    groupContainer.appendChild(group);
+
+    container.appendChild(groupContainer);
+  };
+
+  const removeGroupOrRule = (container, parentGroup, ruleOrGroup) => {
+    if (parentGroup) {
+      const index = parentGroup.rules.indexOf(ruleOrGroup);
+      if (index !== -1) {
+        parentGroup.rules.splice(index, 1);
+      }
+    } else {
+      const index = selectedData.indexOf(ruleOrGroup);
+      if (index !== -1) {
+        selectedData.splice(index, 1);
+      }
+    }
+    container.remove();
+  };
+
+  function generateWhereClause(dataArray, parentGroupOperator = "") {
+    let whereClause = "";
+
+    for (const item of dataArray) {
+      if (item.type === "Group") {
+        const groupOperator = item.groupOperator || "AND"; // Default to AND if operator is not selected
+        const groupWhereClause = generateWhereClause(item.rules, groupOperator);
+        if (groupWhereClause) {
+          if (whereClause) {
+            whereClause += ` ${parentGroupOperator} `;
+          }
+          whereClause += `(${groupWhereClause})`;
+        }
+      } else if (item.type === "Single") {
+        if (item.field && item.operator) {
+          const column = item.column;
+          const field = item.field;
+          const operator = item.operator;
+          const source = item.source;
+          const value = item.value;
+
+          if (whereClause) {
+            whereClause += ` ${parentGroupOperator} `;
+          }
+
+          whereClause += `${field} ${operator} '${value}'`;
+
+        //   if (source === "Value") {
+        //     whereClause += `${field} ${operator} '${value}'`;
+        // } else {
+        //     whereClause += `${field} ${operator} ${value}`;
+        // }
+        }
+      }
+    }
+
+    return whereClause;
+  }
+
+  const ruleBtn = document.getElementById("rule");
+  ruleBtn.addEventListener("click", () => createRule());
+
+  const groupBtn = document.getElementById("group");
+  groupBtn.addEventListener("click", () => createGroup());
+</script>

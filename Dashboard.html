@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+    <link
+      href="https://cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <script src="https://cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+
+    <!-- Optional theme -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+      integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+      crossorigin="anonymous"
+    />
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+      integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+      crossorigin="anonymous"
+    ></script>
+    <link href="css/all.min.css" rel="stylesheet" />
+    <link href="css/fontawesome.min.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <link href="fonts.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+
+    <title>Dashboard</title>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+      .divs {
+        width: 70rem;
+        height: 25rem;
+        padding: 0.5em;
+        overflow: hidden;
+        border-radius: 5px;
+      }
+      .visible {
+        display: block;
+      }
+      .hidden {
+        display: none;
+      }
+      .dataTables_filter input {
+        /* Customize the search input's border and outline */
+        border: 1px solid #ccc; /* Add your preferred border styles */
+        outline: none; /* Remove the default outline */
+        /* Add any other styles you want to apply */
+      }
+      .dataTables_length select {
+        /* Add your preferred styles here */
+        border: 1px solid #ccc; /* Add your preferred border styles */
+        background-color: #fff; /* Add your preferred background color */
+        color: #333; /* Add your preferred text color */
+        padding: 2px; /* Adjust the padding as needed */
+        border-radius: 4px; /* Add border-radius for rounded corners */
+        outline: none; /* Remove the default outline */
+      }
+      /* Add this CSS to style the filter buttons */
+      .filter-button {
+        /* background-color: rgb(73, 73, 228); */
+        color: black; /* Optional: Change text color to white for better visibility */
+        border: none; /* Optional: Remove border if desired */
+        padding: 5px 10px; /* Optional: Adjust padding as needed */
+        cursor: pointer;
+        border-radius: 8px;
+        font-size: 10px;
+      }
+      .date-filter {
+        padding: 15px;
+      }
+      table.dataTable tbody tr {
+        cursor: pointer;
+      }
+      /* CSS to change the background color of selected rows */
+      /* .selected {
+        background-color: #d1d5db;
+      } */
+      /* Custom CSS to make the DataTable more compact */
+      /* Custom CSS to make the DataTable more compact */
+      table.dataTable {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 0;
+        font-size: 12px; /* Adjust the font size as needed */
+      }
+
+      /* Add these styles in your styles.css */
+      /* Styles for header cells */
+      table.dataTable thead th .header-content {
+        display: flex;
+        align-items: center;
+      }
+
+      /* Add margin between icon and text */
+      table.dataTable thead th .header-content i {
+        margin-right: 5px;
+      }
+
+      table.dataTable thead th,
+      table.dataTable tbody td {
+        padding: 2px 4px; /* Adjust the padding as needed */
+      }
+
+      table.dataTable thead th {
+        background-color: #f5f5f5; /* Optional: Add a background color to the table header */
+        border-bottom: 1px solid #ddd; /* Optional: Add a bottom border to the table header */
+      }
+
+      /* Optional: Add hover effect for rows */
+      table.dataTable tbody tr:hover {
+        background-color: #f0f0f0;
+      }
+
+      /* Optional: Add a selected row style */
+      table.dataTable tbody tr.selected {
+        background-color: gray; /* Change this color to your preferred selected row color */
+      }
+      .close-button {
+        background-color: transparent;
+        border: none;
+        color: gray;
+        font-size: 14px;
+        font-weight: bolder;
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        cursor: pointer;
+      }
+
+      .Max{
+        background-color: transparent;
+        border: none;
+        color: gray;
+        font-size: 14px;
+        font-weight: bolder;
+        position: absolute;
+        right: 23px;
+        top: 8px;
+        cursor: pointer;
+      }
+      .Min{
+        background-color: transparent;
+        border: none;
+        color: gray;
+        font-size: 14px;
+        font-weight: bolder;
+        position: absolute;
+        right: 47px;
+        top: 8px;
+        cursor: pointer;
+      }
+
+      .divs {
+        position: relative;
+      }
+
+      .hidden {
+        display: none;
+      }
+      .operator-select {
+        margin-top: 0;
+      }
+      .d-none {
+        display: none !important;
+      }
+      #filterTabs{
+        margin-bottom: 10px
+      }
+      .content{
+        height: 92.2vh;
+      }
+    </style>
+    <script>
+      $(document).ready(function () {
+        // using jquery datepicker
+        $(".datepicker").datepicker({
+          dateFormat: "yy-mm-dd", // Set the desired date format
+          changeMonth: true,
+          changeYear: true,
+        });
+
+        // To make all 5 divs resizeable and draggable using jquery.
+        $("#alarms")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+          });
+
+        $("#allCalls")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+          });
+
+        $("#subscriberDetails")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+          });
+
+        $("#subscriberAlarms")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+          });
+
+        $("#subscriberLogs")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+          });
+      });
+
+      $("#values-tab").tab("show");
+
+      // Switch to the "Values" tab
+      $("#switchToValuesTab").click(function () {
+        $("#values-tab").tab("show");
+      });
+
+      // Switch to the "Numeric Filters" tab
+      $("#switchToNumericFiltersTab").click(function () {
+        $("#numeric-filters-tab").tab("show");
+        $("#values-tab").tab("hide");
+      });
+
+      // This function is to create Datatable inside a targeted div.
+      function createDataTable(containerSelector, columns, data) {
+        let datesArray = ["Created", "Modified", "Updated", "Time"];
+        let rangeArray = ["Amount"];
+        let simpleNumeric = [
+          "IMSI",
+          "User",
+          "Name",
+          "PhoneNumber",
+          "ANumber",
+          "AHandset",
+          "BNumber",
+          "BHandset",
+          "DialDigit",
+          "TrunkIn",
+          "TrunkOut",
+          "DataUp",
+          "DataDown",
+        ];
+        // Create a container for the DataTable
+        var tableContainer = $("<div>").addClass("table-container");
+
+        // Create the table dynamically
+        var table = $("<table>").css("width", "100%").attr("id", `${containerSelector.id}`);
+        var thead = $("<thead>");
+        var tbody = $("<tbody>");
+
+        var headerRow = $("<tr>");
+        for (var i = 0; i < columns.length; i++) {
+          var columnName = columns[i];
+
+          // Create a container for the column name and icon
+          var headerContent = $("<div>").addClass("header-content");
+
+          // Create the column name element
+          var columnHeader = $("<span>").text(columnName);
+
+          // Create the filter button element
+          var filterButton = $("<button>").addClass("filter-button");
+          var icon = $("<i>").addClass("fas fa-filter"); // Replace with your FontAwesome icon class
+          filterButton.append(icon);
+
+          // Add the column name and filter button to the header content container
+          headerContent.append(columnHeader, filterButton);
+
+          // Create the table header cell
+          var headerCell = $("<th>");
+
+          // Append the header content to the header cell
+          headerCell.append(headerContent);
+
+          // Add the header cell to the header row
+          headerRow.append(headerCell);
+
+          var column;
+
+          // Add an event listener for the "Filter" button click
+          filterButton.click(function (e) {
+            e.stopPropagation(); // Stop event propagation to prevent sorting
+            column = $(this).parent().find("span").text(); // Get the column
+            console.log("Column Name", column);
+            var modal = $("#filterModal");
+            modal.find(".modal-title").text("Filter");
+            modal.find("#filterColumn").text(column); // Set the column name in the modal
+
+            // Check if the column name contains "date" (case-insensitive)
+            if (rangeArray.includes(column)) {
+              // Value tab
+              modal.find(".value").show();
+              modal.find(".fromToInputs").show();
+              modal.find(".value-select").hide();
+              modal.find(".fromToDates").hide();
+              // Numeric Filter tab
+              modal.find(".operator-select").show();
+              modal.find(".numeric-input").show();
+              modal.find(".date-input").hide();
+            } else if (datesArray.includes(column)) {
+              // Value tab
+              modal.find(".value").show();
+              modal.find(".fromToDates").show();
+              modal.find(".fromToInputs").hide();
+              modal.find(".value-select").hide();
+              // Numeric Filter tab
+              modal.find(".date-input").show();
+              modal.find(".operator-select").hide();
+              modal.find(".numeric-input").hide();
+            } else if (simpleNumeric.includes(column)) {
+              // Value tab
+              modal.find(".value").hide();
+              // modal.find(".numeric").hide();
+              modal.find(".fromToDates").hide();
+              modal.find(".fromToInputs").hide();
+              modal.find(".value-select").hide();
+              // Numeric Filter tab
+              modal.find(".date-input").hide();
+              modal.find(".operator-select").hide();
+              modal.find(".numeric-input").show();
+            } else {
+              // Value tab
+              modal.find(".value").show();
+              modal.find(".value-select").show();
+              modal.find(".fromToInputs").hide();
+              modal.find(".fromToDates").hide();
+              // Numeric Filter tab
+              modal.find(".numeric-input").show();
+              modal.find(".operator-select").hide();
+              modal.find(".date-input").hide();
+            }
+
+            modal.modal("show");
+          });
+        }
+
+        thead.append(headerRow);
+        table.append(thead);
+
+        for (var i = 0; i < data.length; i++) {
+          var row = $("<tr>");
+          for (var j = 0; j < columns.length; j++) {
+            var columnName = columns[j];
+            row.append($("<td>").text(data[i][columnName]));
+          }
+          tbody.append(row);
+        }
+
+        table.append(tbody);
+
+        // Append the table to the table container
+        tableContainer.append(table);
+
+        // Append the table container to the specified container
+        $(containerSelector).append(tableContainer);
+
+        // Initialize DataTable
+        var dataTable = table.DataTable({
+          scrollY: "100%", // Adjust as needed
+          scrollCollapse: true,
+          order: [],
+          stateSave: true,
+          stateDuration: 60 * 60 * 24 * 365 * 100,
+          responsive: true,
+          scrollX: true, // Enable horizontal scrolling
+          fixedHeader: true,
+        });
+
+        // logic to add on any row click.
+        dataTable.on('click', 'tr', function () {
+        var clickedRow = dataTable.row(this).node();
+
+        // Remove the 'selected' class from all rows
+        table.find("tbody tr").removeClass("selected");
+
+        // Add the 'selected' class to the clicked row
+        $(this).addClass("selected");
+
+        // Get the data for the clicked row
+        var rowData = dataTable.row(this).data();
+
+        console.log("Row Data:", rowData);
+
+        let data;
+
+        // temporary logic with dummy data.
+
+        if(rowData[0] === "Assigned"){
+          console.log("assigned");
+          data = [
+                {
+                  Duration: 120,
+                  PrepaidCharge: 25.0,
+                  DataDown: 450,
+                  DataUp: 250,
+                  PrepaidBalance: 40.0,
+                  Classification: "Class B",
+                  ANumber: "777777777",
+                  ANumberHandset: "Handset X",
+                  BNumber: "666666666",
+                  BNumberHandset: "Handset Y",
+                  Country: "Germany",
+                  DialDigit: "5",
+                  APN: "web",
+                  Company: "Company ABC",
+                  FirstCell: "Cell Tower 5",
+                  TrunkIn: "Trunk In 5",
+                  TrunkOut: "Trunk Out 5",
+                  ExchangeId: "Exchange 5",
+                },
+                {
+                  Duration: 180,
+                  PrepaidCharge: 35.5,
+                  DataDown: 750,
+                  DataUp: 400,
+                  PrepaidBalance: 60.0,
+                  Classification: "Class C",
+                  ANumber: "888888888",
+                  ANumberHandset: "Handset P",
+                  BNumber: "999999999",
+                  BNumberHandset: "Handset Q",
+                  Country: "France",
+                  DialDigit: "4",
+                  APN: "data",
+                  Company: "Company XYZ",
+                  FirstCell: "Cell Tower 6",
+                  TrunkIn: "Trunk In 6",
+                  TrunkOut: "Trunk Out 6",
+                  ExchangeId: "Exchange 6",
+                },
+                // Add more objects as needed
+              ];
+        }else if(rowData[0] === "Open"){
+          console.log("open")
+        data= [
+          {
+            Duration: 90,
+            PrepaidCharge: 20.0,
+            DataDown: 300,
+            DataUp: 200,
+            PrepaidBalance: 30.0,
+            Classification: "Class C",
+            ANumber: "111111111",
+            ANumberHandset: "Handset E",
+            BNumber: "222222222",
+            BNumberHandset: "Handset F",
+            Country: "UK",
+            DialDigit: "7",
+            APN: "data",
+            Company: "Company PQR",
+            FirstCell: "Cell Tower 3",
+            TrunkIn: "Trunk In 3",
+            TrunkOut: "Trunk Out 3",
+            ExchangeId: "Exchange 3",
+          },
+          {
+            Duration: 150,
+            PrepaidCharge: 28.5,
+            DataDown: 600,
+            DataUp: 350,
+            PrepaidBalance: 55.0,
+            Classification: "Class A",
+            ANumber: "999999999",
+            ANumberHandset: "Handset G",
+            BNumber: "888888888",
+            BNumberHandset: "Handset H",
+            Country: "Australia",
+            DialDigit: "6",
+            APN: "internet",
+            Company: "Company LMN",
+            FirstCell: "Cell Tower 4",
+            TrunkIn: "Trunk In 4",
+            TrunkOut: "Trunk Out 4",
+            ExchangeId: "Exchange 4",
+          },
+          // Add more objects as needed
+        ];
+      }
+        // if the container inside which we are creating datatable is alarms then we are suppossed to perform some certain actions.
+        if(containerSelector.id === "alarms"){
+          const allCallsDiv = document.getElementById("allCalls");
+          if(allCallsDiv.classList.contains("hidden")){
+            allCallsDiv.classList.remove('hidden');
+            CreateDiv(allCallsDiv,data);
+          }else{
+            allCallsDiv.innerHTML = "";
+            $("#allCalls")
+          .draggable("destroy")
+          .resizable("destroy")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#allCalls table").DataTable().draw();
+            },
+          });
+            CreateDiv(allCallsDiv,data);
+          }
+        }
+      });
+
+      // on right click opens a modal to assign alarms
+      dataTable.on('contextmenu', 'tr', function(event) {
+      // Prevent the default context menu
+      event.preventDefault();
+
+      // Get the data for the right-clicked row
+      var clickedRow = dataTable.row(this).node();
+      var rowData = dataTable.row(clickedRow).data();
+
+      console.log('Right-clicked row data:', rowData);
+
+      // Show the Bootstrap modal
+        $('#contextMenuModal').modal('show');
+
+        $('#assignButton').click(function() {
+          // Do something when Assign is clicked (e.g., assign the row)
+          console.log('Assign clicked for row:', rowData);
+
+          // Close the modal
+          $('#contextMenuModal').modal('hide');
+        });
+         $('#assignToButton').click(function() {
+          // Do something when AssignTo is clicked (e.g., assign to another user)
+          console.log('AssignTo clicked for row:', rowData);
+
+           $('#dynamicSelectBox').show();
+
+          // Populate the select box with dynamic options (replace with your own data)
+          var selectBox = $('#assignToSelect');
+          selectBox.empty();
+
+          // Example options
+          selectBox.append($('<option>', {
+              value: '',
+              text: 'Select'
+            }));
+          var users = ['Shahid', 'Mohsin', 'Nadeem'];
+          users.forEach(function(user) {
+            selectBox.append($('<option>', {
+              value: user,
+              text: user
+            }));
+          });
+        });
+
+    });
+
+        $('#removeAllFilters').click(function(){
+          console.log("Entered");
+          if(datesArray.includes(column) || rangeArray.includes(column)){
+            dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var valuesArray = data.map(function (obj) {
+                      return Object.values(obj);
+                    });
+                    dataTable.clear();
+                    dataTable.rows.add(valuesArray);
+                    dataTable.draw();
+                  }
+                });
+          }else{
+          dataTable.search("").columns().search("").draw();
+        }
+        })
+
+        // Add event listener for the "Apply Filter" button click
+        $("#applyFilter").click(function () {
+          // For All Number Range Columns
+          if (rangeArray.includes(column)) {
+            var fromValue = $("#fromInput").val();
+            var toValue = $("#toInput").val();
+            var operator = $("#arithmeticOperatorNumeric").val(); // Get the selected operator
+            var filterValue = parseFloat($("#numericFilter").val());
+            // Value Tab
+            if (fromValue && toValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var filteredData = dataTable
+                      .rows(function (idx, data, node) {
+                        var columnValue = parseFloat(data[colIdx]);
+                        return columnValue > fromValue && columnValue < toValue;
+                      })
+                      .data()
+                      .toArray();
+
+                    console.log(filteredData);
+                    dataTable.clear();
+                    dataTable.rows.add(filteredData);
+                    dataTable.draw();
+                  }
+                });
+            }
+            // Numeric Filter Tab
+            else if (operator && filterValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var filteredData = dataTable
+                      .rows(function (idx, data, node) {
+                        var columnValue = parseFloat(data[colIdx]);
+                        switch (operator) {
+                          case "=":
+                            return columnValue === filterValue;
+                          case ">":
+                            return columnValue > filterValue;
+                          case "<":
+                            return columnValue < filterValue;
+                          case ">=":
+                            return columnValue >= filterValue;
+                          case "<=":
+                            return columnValue <= filterValue;
+                          default:
+                            // Handle other cases or return true to show all rows
+                            return true;
+                        }
+                      })
+                      .data()
+                      .toArray();
+
+                    console.log(filteredData);
+                    dataTable.clear();
+                    dataTable.rows.add(filteredData);
+                    dataTable.draw();
+                  }
+                });
+            } else if (!operator && !filterValue && !fromValue && !toValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var valuesArray = data.map(function (obj) {
+                      return Object.values(obj);
+                    });
+                    dataTable.clear();
+                    dataTable.rows.add(valuesArray);
+                    dataTable.draw();
+                  }
+                });
+            }
+          }
+          // For All Date Columns
+          else if (datesArray.includes(column)) {
+            var fromValue = $("#fromDatePicker").val();
+            var toValue = $("#toDatePicker").val();
+            var filterValue = $("#dateFilter").val(); // Get the filter value as a number
+            // Value Tab
+            if (fromValue && toValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    filteredDates = data.filter(function (item) {
+                      var itemDate = new Date(item[column]);
+                      return (
+                        itemDate > new Date(fromValue) &&
+                        itemDate < new Date(toValue)
+                      );
+                    });
+
+                    var filteredValues = filteredDates.map(function (item) {
+                      return Object.values(item);
+                    });
+
+                    console.log(filteredValues);
+                    dataTable.clear();
+                    dataTable.rows.add(filteredValues);
+                    dataTable.draw();
+                  }
+                });
+            }
+            // Numeric Filter Tab
+            else if (filterValue) {
+              console.log("FilterValue", filterValue);
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    filteredDates = data.filter(function (item) {
+                      var itemDate = new Date(item[column]);
+                      var filterDate = new Date(filterValue);
+
+                      // Compare the date parts of the two Date objects
+                      return (
+                        itemDate.getDate() === filterDate.getDate() &&
+                        itemDate.getMonth() === filterDate.getMonth() &&
+                        itemDate.getFullYear() === filterDate.getFullYear()
+                      );
+                    });
+
+                    console.log(filteredDates);
+
+                    var filteredValues = filteredDates.map(function (item) {
+                      return Object.values(item);
+                    });
+
+                    console.log(filteredValues);
+                    dataTable.clear();
+                    dataTable.rows.add(filteredValues);
+                    dataTable.draw();
+                  }
+                });
+            } else if (!fromValue && !toValue && !filterValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var valuesArray = data.map(function (obj) {
+                      return Object.values(obj);
+                    });
+                    dataTable.clear();
+                    dataTable.rows.add(valuesArray);
+                    dataTable.draw();
+                  }
+                });
+            }
+          }
+          // For All columns which use simple numeric filter: 
+          else if (simpleNumeric.includes(column)) {
+            var numericFilterValue = $("#numericFilter").val();
+            console.log(numericFilterValue);
+            if (numericFilterValue !== "") {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    columnInfo.search(numericFilterValue).draw();
+                  }
+                });
+            }else{
+              console.log("Show All Data");
+              // If both inputs are empty, show all data
+              dataTable.search("").columns().search("").draw();
+            }
+          }
+          // For All Other General Columns
+          else {
+            var selectBoxValue = $("#filterSelect").val(); // Get the select box value
+            var numericFilterValue = $("#numericFilter").val(); // Get the numeric filter value
+
+            if (selectBoxValue !== "" || numericFilterValue !== "") {
+              // Initialize a variable to store the filter value
+              var filterValue;
+
+              if (selectBoxValue !== "") {
+                filterValue = selectBoxValue; // Use the select box value
+              } else {
+                filterValue = numericFilterValue; // Use the numeric filter value
+              }
+
+              // Apply the filter based on filterValue
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    columnInfo.search(filterValue).draw();
+                  }
+                });
+            } else {
+              // If both inputs are empty, show all data
+              dataTable.search("").columns().search("").draw();
+            }
+
+        }
+          // Close the modal
+          $("#filterModal").modal("hide");
+        });
+
+        tableContainer.on("scroll", function () {
+          var scrollLeft = $(this).scrollLeft();
+          table
+            .find("thead th")
+            .css("transform", "translateX(" + -scrollLeft + "px)");
+        });
+
+        // Adjust datatable width with increase or decrease in width i.e resizing.
+        function adjustDataTableWidth() {
+        var containerWidth = tableContainer.width();
+        dataTable.columns.adjust().draw();
+        var hasScrollbar = table.width() > containerWidth;
+        if (hasScrollbar) {
+          table.css("width", "100%");
+        } else {
+          table.css("width", "");
+        }
+      }  
+        // Function to adjust the DataTable height
+        function adjustDataTableHeight() {
+        var containerHeight = tableContainer.height();
+        dataTable.scrollY = containerHeight + "px"; // Set the DataTable's scrollY to match the container's height
+        dataTable.draw(false); // Redraw the DataTable without clearing existing data
+      }
+
+        // Adjust the DataTable width when the div is resized
+        // Attach event handler to window resize
+      $(window).on("resize", function () {
+        adjustDataTableWidth();
+        adjustDataTableHeight()
+      });
+            // Call both functions initially
+        adjustDataTableWidth();
+        adjustDataTableHeight();
+
+      }
+      // on page reload
+      window.addEventListener('load', function() {
+        // i have stored the saved div's attribute in localStorage and now i am getting those attribute from localStorage in order to populate the div on page reload.
+      const divDataJSON = localStorage.getItem('divData');
+      if (divDataJSON) {
+      const divData = JSON.parse(divDataJSON);
+
+      setTimeout(function() {
+      Object.keys(divData).forEach(id => {
+        const div = document.getElementById(id);
+        const { width, height, top, left, bottom, right } = divData[id];
+
+        
+        console.log("When Retrieving",divData[id]);
+
+      div.style.width = `${width}px`;
+      div.style.height = `${height}px`;
+      div.style.margin = "0px";
+      div.style.position = "absolute"; // Set the position to absolute
+      div.style.top = `${top}px`; 
+      div.style.left = `${left}px`;
+      div.style.bottom = `${bottom}px`;
+      div.style.right = `${right}px`;
+
+      // Make the div visible if it has dimensions
+      if (width > 0 && height > 0) {
+        div.classList.remove('hidden');
+      }
+
+      let data;
+
+      if(div.id === "alarms"){
+        data = [
+            {
+              Status: "Assigned",
+              User: "User 1",
+              IMSI: "IMSI 1",
+              Amount: 100,
+              Name: "Name 1",
+              Created: "2023-09-06",
+              PhoneNumber: "Phone 1",
+              SubscriberTypeId: 1,
+              AlarmType: "Type 1",
+              AlarmGroup: "Group 1",
+              Info: "Info 1",
+            },
+            {
+              Status: "Open",
+              User: "User 2",
+              IMSI: "IMSI 2",
+              Amount: 200,
+              Name: "Name 2",
+              Created: "2023-06-06",
+              PhoneNumber: "Phone 2",
+              SubscriberTypeId: 2,
+              AlarmType: "Type 2",
+              AlarmGroup: "Group 2",
+              Info: "Info 2",
+            },
+            // Add more objects as needed
+          ];
+      }else if(div.id === "allCalls"){
+        data = [
+          {
+            Duration: 120,
+            PrepaidCharge: 25.5,
+            DataDown: 500,
+            DataUp: 300,
+            PrepaidBalance: 50.75,
+            Classification: "Class A",
+            ANumber: "123456789",
+            ANumberHandset: "Handset A",
+            BNumber: "987654321",
+            BNumberHandset: "Handset B",
+            Country: "USA",
+            DialDigit: "9",
+            APN: "internet",
+            Company: "Company XYZ",
+            FirstCell: "Cell Tower 1",
+            TrunkIn: "Trunk In 1",
+            TrunkOut: "Trunk Out 1",
+            ExchangeId: "Exchange 1",
+          },
+          {
+            Duration: 180,
+            PrepaidCharge: 35.0,
+            DataDown: 800,
+            DataUp: 400,
+            PrepaidBalance: 45.25,
+            Classification: "Class B",
+            ANumber: "555555555",
+            ANumberHandset: "Handset C",
+            BNumber: "666666666",
+            BNumberHandset: "Handset D",
+            Country: "Canada",
+            DialDigit: "8",
+            APN: "web",
+            Company: "Company ABC",
+            FirstCell: "Cell Tower 2",
+            TrunkIn: "Trunk In 2",
+            TrunkOut: "Trunk Out 2",
+            ExchangeId: "Exchange 2",
+          },
+          // Add more objects as needed
+        ];
+      }else if(div.id === "subscriberDetails"){
+        data = [
+          {
+            CallType: "Incoming",
+            Value: "123-456-7890",
+            State: "Connected",
+            ModifiedBy: "User A",
+            Modified: "2023-09-06",
+          },
+          {
+            CallType: "Outgoing",
+            Value: "987-654-3210",
+            State: "Disconnected",
+            ModifiedBy: "User B",
+            Modified: "2023-09-06",
+          },
+          // Add more objects as needed
+        ];
+      }else if(div.id === "subscriberAlarms"){
+        data = [
+          {
+            AlarmType: "Type A",
+            AlarmGroup: "Group 1",
+            Updates: 3,
+            Amount: 100.5,
+            Severity: "High",
+            Updated: "2023-09-06",
+            Created: "2023-09-06",
+          },
+          {
+            AlarmType: "Type B",
+            AlarmGroup: "Group 2",
+            Updates: 2,
+            Amount: 75.25,
+            Severity: "Medium",
+            Updated: "2023-09-06",
+            Created: "2023-09-06",
+          },
+          // Add more objects as needed
+        ];
+      }else if(div.id === "subscriberLogs"){
+        data = [
+          {
+            Time: "2023-09-06",
+            User: "User 1",
+            Type: "Login",
+            Detail: "User 1 logged in.",
+          },
+          {
+            Time: "2023-06-06",
+            User: "User 2",
+            Type: "Logout",
+            Detail: "User 2 logged out.",
+          },
+          // Add more objects as needed
+        ];
+      }
+
+      // then we are creating div again in order to populate with the respective columns.
+      $(`#${div.id}`)
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+          });
+      CreateDiv(div,data);
+        }, 100);
+    });
+  }
+});
+
+  </script>
+  </head>
+  <body>
+    <nav class="bg-white p-4 shadow-md">
+      <div class="container mx-auto">
+        <!-- Assign Modal -->
+      <div class="modal fade" id="contextMenuModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title float-left" id="exampleModalLabel">Assign Alarm</h5>
+              <button type="button" class="close float-right" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <button type="button" class="btn btn-secondary" id="assignButton">Assign</button>
+              <button type="button" class="btn btn-secondary" id="assignToButton">AssignTo</button>
+
+              <!-- Dynamic Select Box -->
+              <div id="dynamicSelectBox" style="display: none; margin-top: 10px;">
+                <label for="assignToSelect">Select User:</label>
+                <select id="assignToSelect" class="form-control"></select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+        <!-- FilterModal -->
+          <div
+            class="modal fade"
+            id="filterModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="filterModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="filterModalLabel">Filter Data</h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <!-- Tab navigation -->
+                  <ul class="nav nav-tabs" id="filterTabs" role="tablist">
+                    <li class="nav-item value">
+                      <a
+                        class="nav-link active"
+                        id="values-tab"
+                        data-toggle="tab"
+                        href="#values"
+                        role="tab"
+                        aria-controls="values"
+                        aria-selected="true"
+                        >Values</a
+                      >
+                    </li>
+                    <li class="nav-item numeric">
+                      <a
+                        class="nav-link"
+                        id="numeric-filters-tab"
+                        data-toggle="tab"
+                        href="#numeric-filters"
+                        role="tab"
+                        aria-controls="numeric-filters"
+                        aria-selected="false"
+                        >Numeric Filters</a
+                      >
+                    </li>
+                  </ul>
+
+                  <!-- Tab content -->
+                  <div class="tab-content" id="filterTabContent">
+                    <!-- Values tab -->
+                    <div
+                      class="tab-pane fade show active"
+                      id="values"
+                      role="tabpanel"
+                      aria-labelledby="values-tab"
+                    >
+                      <div class="form-group value-select">
+                        <label for="filterSelect">Filter by Column</label>
+                        <select class="form-control" id="filterSelect">
+                          <option value="">Select a value</option>
+                          <option value="Assigned">Assigned</option>
+                          <option value="Open">Open</option>
+                          <!-- Add more options as needed -->
+                        </select>
+                      </div>
+                      <div class="form-group fromToDates">
+                        <label for="fromDatePicker">From Date</label>
+                        <input
+                          type="text"
+                          class="form-control datepicker"
+                          id="fromDatePicker"
+                          placeholder="Select from date"
+                        />
+                      </div>
+                      <div class="form-group fromToDates">
+                        <label for="toDatePicker">To Date</label>
+                        <input
+                          type="text"
+                          class="form-control datepicker"
+                          id="toDatePicker"
+                          placeholder="Select to date"
+                        />
+                      </div>
+                      <div
+                        class="form-group fromToInputs"
+                        style="display: none"
+                      >
+                        <label for="fromInput">From</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="fromInput"
+                          placeholder="Enter from value"
+                        />
+                      </div>
+                      <div
+                        class="form-group fromToInputs"
+                        style="display: none"
+                      >
+                        <label for="toInput">To</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="toInput"
+                          placeholder="Enter to value"
+                        />
+                      </div>
+                    </div>
+
+                    <!-- Numeric Filters tab -->
+                    <div
+                      class="tab-pane fade"
+                      id="numeric-filters"
+                      role="tabpanel"
+                      aria-labelledby="numeric-filters-tab"
+                    >
+                      <div class="form-group operator-select">
+                        <label for="arithmeticOperatorNumeric"
+                          >Select Operator</label
+                        >
+                        <select
+                          class="form-control"
+                          id="arithmeticOperatorNumeric"
+                        >
+                          <option value="">Select Operator</option>
+                          <option value="=">Equal to (=)</option>
+                          <option value="!=">Not equal to (!=)</option>
+                          <option value="<">Less than (<)</option>
+                          <option value="<=">Less than or equal to (<=)</option>
+                          <option value=">">Greater than (>)</option>
+                          <option value=">=">
+                            Greater than or equal to (>=)
+                          </option>
+                        </select>
+                      </div>
+                      <div
+                        class="form-group numeric-input"
+                        style="margin-top: 0; padding-top: 0"
+                      >
+                        <label for="numericFilter">Numeric Filter</label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="numericFilter"
+                          placeholder="Enter numeric filter value"
+                        />
+                      </div>
+                      <div
+                        class="form-group date-input"
+                        style="margin-top: 0; padding-top: 0"
+                      >
+                        <label for="dateFilter">Date Filter</label>
+                        <input
+                          type="text"
+                          class="form-control datepicker"
+                          id="dateFilter"
+                          placeholder="Enter numeric filter value"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <!-- Apply Filter button -->
+                  <button
+                    type="button"
+                    class="btn btn-primary text-black"
+                    id="applyFilter"
+                  >
+                    Apply Filter
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          // in my code i was facing a problem that when i switch to numeric filters tab the values tab was also visible and was consuming extra space so this is the code to hide the values tab when the numeric filters tab is active.
+          // to show and hide values tab conditionally
+          $('#filterTabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+          if (e.target.id === 'numeric-filters-tab') {
+            // Add a class to hide the #values div
+            $('#values').addClass('d-none');
+          } else if (e.target.id === 'values-tab') {
+            // Remove the class if the #values tab is active
+            $('#values').removeClass('d-none');
+          }
+        });
+        </script>
+
+        <div class="flex justify-between">
+        <!-- Workspace Button -->
+        <button
+          id="workspace-button"
+          class="bg-gray-200 hover:bg-gray-300 text-black font-semibold px-4 py-2 rounded"
+        >
+          <i class="fas fa-briefcase text-blue-400"></i>
+          Workspace
+        </button>
+
+        <button id="save-button" class="bg-gray-200 text-black hover:bg-blue-300 font-semibold px-4 py-2 rounded">
+          <i class="fas fa-floppy-disk text-green-400"></i>
+          Save
+        </button>
+
+      </div>
+
+        <!-- Toggle Menu -->
+        <div
+          id="workspace-menu"
+          class="hidden absolute top-16 left-4 bg-white p-4 border shadow-lg rounded z-10"
+        >
+          <button class="block w-full mb-2 text-left text-gray-800" id="alarm">
+            Alarms
+          </button>
+          <button class="block w-full mb-2 text-left text-gray-800" id="calls">
+            All Calls
+          </button>
+          <button
+            class="block w-full mb-2 text-left text-gray-800"
+            id="subscriberdetail"
+          >
+            Subscriber Details
+          </button>
+          <button
+            class="block w-full mb-2 text-left text-gray-800"
+            id="subscriberalarm"
+          >
+            Subscriber Alarms
+          </button>
+          <button
+            class="block w-full text-left text-gray-800"
+            id="subscriberlog"
+          >
+            Subscriber Logs
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="content w-full">
+      <div id="alarms" class="divs ui-widget-content m-6 hidden">
+      </div>
+      <div id="allCalls" class="divs ui-widget-content m-6 hidden"></div>
+      <div
+        id="subscriberDetails"
+        class="divs ui-widget-content m-6 hidden"
+      ></div>
+      <div
+        id="subscriberAlarms"
+        class="divs ui-widget-content m-6 hidden"
+      ></div>
+      <div id="subscriberLogs" class="divs ui-widget-content m-6 hidden"></div>
+    </div>
+    <script>
+      const workspaceButton = document.getElementById("workspace-button");
+      const workspaceMenu = document.getElementById("workspace-menu");
+      const alarmsBtn = document.getElementById("alarm");
+      const callsBtn = document.getElementById("calls");
+      const subscriberDetailBtn = document.getElementById("subscriberdetail");
+      const subscriberAlarmBtn = document.getElementById("subscriberalarm");
+      const subscriberLogBtn = document.getElementById("subscriberlog");
+      // Action on clicking th workspace button.
+      workspaceButton.addEventListener("click", () => {
+        workspaceMenu.classList.toggle("hidden");
+      });
+
+      // Action on clicking save button
+      // Storing the saved div data in localStorage to get it on  reload and populate on reload.
+      document.getElementById('save-button').addEventListener('click', function() {
+  // Targeting the divs which are not hidden
+      const divs = document.querySelectorAll('.divs:not(.hidden)');
+      const divData = {};
+
+      divs.forEach(div => {
+        const id = div.id;
+        // const width = div.offsetWidth;
+        // const height = div.offsetHeight;
+        // const top = window.scrollY;
+        // const left = window.scrollX;
+
+        // Calculate the position relative to the document, accounting for scrolling
+        const rect = div.getBoundingClientRect();
+        const width = rect.width;
+        const height = rect.height;
+        const top = rect.top;
+        const left = rect.left;
+        const bottom = rect.bottom;
+        const right = rect.right;
+
+        divData[id] = {
+          width,
+          height,
+          top,
+          left,
+          bottom,
+          right
+        };
+
+        console.log("When Storing",divData[id])
+      });
+
+      localStorage.setItem('divData', JSON.stringify(divData));
+      toastr.success('Profile Saved Successfully!', 'Success');
+    });
+
+
+
+
+    const originalWidths = {}; // Store original widths for each div
+
+// Function to maximize the div
+function maximizeDiv(div) {
+    const divId = div.id;
+    const allDataTables = $.fn.dataTable.fnTables(true); // Get all DataTable instances
+console.log("dataTable", allDataTables);
+
+const targetDataTable = allDataTables.find(function (dataTable) {
+    return $(dataTable).attr('id') === divId;
+});
+
+console.log("targetDataTable", targetDataTable);
+
+ const dataTable = $(targetDataTable).DataTable();
+
+    // Check if the original dimensions are already stored
+    if (!originalWidths[divId]) {
+        const styles = window.getComputedStyle(div);
+        originalWidths[divId] = div.offsetWidth; // Store the original width
+        originalWidths[divId + "-height"] = div.offsetHeight; // Store the original height
+        originalWidths[divId + "-margin"] = styles.margin; // Store the original margin
+        originalWidths[divId + "-padding"] = styles.padding; // Store the original padding
+        originalWidths[divId + "-top"] = styles.top; // Store the original top position
+        originalWidths[divId + "-left"] = styles.left; // Store the original left position
+    }
+
+    // Set the div styles for maximizing
+    div.style.cssText = `
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        margin: 0;
+        padding: 10px;
+        z-index: 500;
+    `;
+
+    // Redraw and adjust the DataTable
+    dataTable.columns.adjust().draw();
+
+    // Check if the DataTable container has a horizontal scrollbar
+    const tableContainer = dataTable.table().container();
+    const hasScrollbar = tableContainer.scrollWidth > tableContainer.clientWidth;
+
+    // Adjust the DataTable's width accordingly
+    tableContainer.style.width = hasScrollbar ? "100%" : "";
+}
+
+
+    // Function to restore the div to its original dimensions and position
+    function restoreDiv(div) {
+      const divId = div.id;
+      const originalWidth = originalWidths[divId];
+      const originalHeight = originalWidths[divId + "-height"];
+      const originalMargin = originalWidths[divId + "-margin"];
+      const originalPadding = originalWidths[divId + "-padding"];
+      const originalTop = originalWidths[divId + "-top"];
+      const originalLeft = originalWidths[divId + "-left"];
+      if (originalWidth !== undefined && originalHeight !== undefined) {
+        div.style.width = originalWidth + "px";
+        div.style.height = originalHeight + "px";
+        div.style.position = "absolute";
+        div.style.top = originalTop;
+        div.style.left = originalLeft;
+        div.style.margin = originalMargin;
+        div.style.padding = originalPadding;
+        div.style.zIndex = "0";
+      }
+    }
+
+      // to create div with the targeted div id and data.
+      const CreateDiv = (div,data) => {
+          const h1 = document.createElement("h1");
+          const strong = document.createElement("strong");
+          if(div.id === "alarms"){
+            strong.textContent = "Alarms";
+          }else if(div.id === "allCalls"){
+            strong.textContent = "All Calls";
+          }
+          else if(div.id === "subscriberDetails"){
+            strong.textContent = "Subscriber Details";
+          }
+          else if(div.id === "subscriberAlarms"){
+            strong.textContent = "Subscriber Alarms";
+          }
+          else if(div.id === "subscriberLogs"){
+            strong.textContent = "Subscriber Logs";
+          }
+          h1.classList.add("mb-5");
+          h1.appendChild(strong);
+          div.appendChild(h1);
+          const removeAllFiltersBtn = document.createElement("button");
+          removeAllFiltersBtn.textContent = "Remove All Filters";
+          removeAllFiltersBtn.classList.add("mb-3");
+          removeAllFiltersBtn.id = "removeAllFilters";
+          div.appendChild(removeAllFiltersBtn);
+          const MinIcon = document.createElement("i");
+          MinIcon.classList.add("fas", "fa-window-minimize","text-black","cursor-pointer");
+          MinIcon.classList.add("Min");
+          MinIcon.addEventListener("click",()=>{
+            restoreDiv(div);
+          })
+          div.appendChild(MinIcon);
+          const MaxIcon = document.createElement("i");
+          MaxIcon.classList.add("fas", "fa-window-maximize","text-black","cursor-pointer","ml-2");
+          MaxIcon.classList.add("Max");
+          MaxIcon.id = "max";
+          MaxIcon.addEventListener("click",()=>{
+            maximizeDiv(div);
+          })
+          div.appendChild(MaxIcon);
+          const crossButton = document.createElement("button");
+          crossButton.textContent = "X";
+          crossButton.classList.add("close-button");
+          crossButton.addEventListener("click", () => {
+            div.classList.remove("visible");
+            div.classList.add("hidden");
+          });
+          div.appendChild(crossButton);
+          var columns;
+          if(div.id === "alarms"){
+            columns = [
+            "Status",
+            "User",
+            "IMSI",
+            "Amount",
+            "Name",
+            "Created",
+            "PhoneNumber",
+            "SubscriberTypeId",
+            "AlarmType",
+            "AlarmGroup",
+            "Info",
+          ];
+          }else if(div.id === "allCalls"){
+            columns = [
+            "Duration",
+            "PrepaidCharge",
+            "DataDown",
+            "DataUp",
+            "PrepaidBalance",
+            "Classification",
+            "ANumber",
+            "ANumberHandset",
+            "BNumber",
+            "BNumberHandset",
+            "Country",
+            "DialDigit",
+            "APN",
+            "Company",
+            "FirstCell",
+            "TrunkIn",
+            "TrunkOut",
+            "ExchangeId",
+          ];
+          }else if(div.id === "subscriberDetails"){
+            columns = ["CallType", "Value", "State", "ModifiedBy", "Modified"];
+          }else if(div.id === "subscriberAlarms"){
+              columns = [
+            "AlarmType",
+            "AlarmGroup",
+            "Updates",
+            "Amount",
+            "Severity",
+            "Updated",
+            "Created",
+          ];
+          }else if(div.id === "subscriberLogs"){
+            columns = ["Time", "User", "Type", "Detail"];
+          }
+          // Initialize resizable
+          $(div).resizable({
+            handles: "n, e, s, w, ne, se, sw, nw", // Change the handles as needed
+          });
+
+          // Initialize draggable
+          $(div).draggable();
+          createDataTable(div, columns, data);
+        }
+
+        alarmsBtn.addEventListener("click", () => {
+        workspaceMenu.classList.add("hidden");
+        const alarmsDiv = document.getElementById("alarms");
+
+        // Check if the div is already visible, and if so, do nothing
+        if (alarmsDiv.classList.contains("visible")) {
+          return;
+        }
+
+        // Clear the content of the div
+        alarmsDiv.innerHTML = "";
+
+        // Reset resizable and draggable
+        $("#alarms")
+          .draggable("destroy")
+          .resizable("destroy")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#alarms table").DataTable().draw();
+            },
+          });
+        alarmsDiv.classList.remove("hidden");
+        alarmsDiv.classList.add("visible");
+        let data = [
+            {
+              Status: "Assigned",
+              User: "User 1",
+              IMSI: "IMSI 1",
+              Amount: 100,
+              Name: "Name 1",
+              Created: "2023-09-06",
+              PhoneNumber: "Phone 1",
+              SubscriberTypeId: 1,
+              AlarmType: "Type 1",
+              AlarmGroup: "Group 1",
+              Info: "Info 1",
+            },
+            {
+              Status: "Open",
+              User: "User 2",
+              IMSI: "IMSI 2",
+              Amount: 200,
+              Name: "Name 2",
+              Created: "2023-06-06",
+              PhoneNumber: "Phone 2",
+              SubscriberTypeId: 2,
+              AlarmType: "Type 2",
+              AlarmGroup: "Group 2",
+              Info: "Info 2",
+            },
+            // Add more objects as needed
+          ];
+        CreateDiv(alarmsDiv,data);
+      });
+
+      callsBtn.addEventListener("click", () => {
+        workspaceMenu.classList.add("hidden");
+        const callsDiv = document.getElementById("allCalls");
+
+        // Check if the div is already visible, and if so, do nothing
+        if (callsDiv.classList.contains("visible")) {
+          return;
+        }
+
+        // Clear the content of the div
+        callsDiv.innerHTML = "";
+
+        // Reset resizable and draggable
+        $("#allCalls")
+          .draggable("destroy")
+          .resizable("destroy")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+            // resize: function () {
+            //   // Redraw the DataTable when the div is resized
+            //   $("#allCalls table").DataTable().draw();
+            // },
+          });
+        callsDiv.classList.remove("hidden");
+        callsDiv.classList.add("visible");
+        let data = [
+          {
+            Duration: 120,
+            PrepaidCharge: 25.5,
+            DataDown: 500,
+            DataUp: 300,
+            PrepaidBalance: 50.75,
+            Classification: "Class A",
+            ANumber: "123456789",
+            ANumberHandset: "Handset A",
+            BNumber: "987654321",
+            BNumberHandset: "Handset B",
+            Country: "USA",
+            DialDigit: "9",
+            APN: "internet",
+            Company: "Company XYZ",
+            FirstCell: "Cell Tower 1",
+            TrunkIn: "Trunk In 1",
+            TrunkOut: "Trunk Out 1",
+            ExchangeId: "Exchange 1",
+          },
+          {
+            Duration: 180,
+            PrepaidCharge: 35.0,
+            DataDown: 800,
+            DataUp: 400,
+            PrepaidBalance: 45.25,
+            Classification: "Class B",
+            ANumber: "555555555",
+            ANumberHandset: "Handset C",
+            BNumber: "666666666",
+            BNumberHandset: "Handset D",
+            Country: "Canada",
+            DialDigit: "8",
+            APN: "web",
+            Company: "Company ABC",
+            FirstCell: "Cell Tower 2",
+            TrunkIn: "Trunk In 2",
+            TrunkOut: "Trunk Out 2",
+            ExchangeId: "Exchange 2",
+          },
+          // Add more objects as needed
+        ];
+        CreateDiv(callsDiv,data);
+      });
+      subscriberDetailBtn.addEventListener("click", () => {
+        workspaceMenu.classList.add("hidden");
+        const subscriberDetailDiv =
+          document.getElementById("subscriberDetails");
+
+          // Check if the div is already visible, and if so, do nothing
+        if (subscriberDetailDiv.classList.contains("visible")) {
+          return;
+        }
+
+        // Clear the content of the div
+        subscriberDetailDiv.innerHTML = "";
+
+        // Reset resizable and draggable
+        $("#subscriberDetails")
+          .draggable("destroy")
+          .resizable("destroy")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#subscriberDetails table").DataTable().draw();
+            },
+          });
+        subscriberDetailDiv.classList.remove("hidden");
+        subscriberDetailDiv.classList.add("visible");
+        let data = [
+          {
+            CallType: "Incoming",
+            Value: "123-456-7890",
+            State: "Connected",
+            ModifiedBy: "User A",
+            Modified: "2023-09-06",
+          },
+          {
+            CallType: "Outgoing",
+            Value: "987-654-3210",
+            State: "Disconnected",
+            ModifiedBy: "User B",
+            Modified: "2023-09-06",
+          },
+          // Add more objects as needed
+        ];
+        CreateDiv(subscriberDetailDiv,data)
+      });
+      subscriberAlarmBtn.addEventListener("click", () => {
+        workspaceMenu.classList.add("hidden");
+        const subscriberAlarmDiv = document.getElementById("subscriberAlarms");
+
+          // Check if the div is already visible, and if so, do nothing
+          if (subscriberAlarmDiv.classList.contains("visible")) {
+          return;
+        }
+
+        // Clear the content of the div
+        subscriberAlarmDiv.innerHTML = "";
+
+        // Reset resizable and draggable
+        $("#subscriberAlarms")
+          .draggable("destroy")
+          .resizable("destroy")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#subscriberAlarms table").DataTable().draw();
+            },
+          });
+        subscriberAlarmDiv.classList.remove("hidden");
+        subscriberAlarmDiv.classList.add("visible");
+        let data = [
+          {
+            AlarmType: "Type A",
+            AlarmGroup: "Group 1",
+            Updates: 3,
+            Amount: 100.5,
+            Severity: "High",
+            Updated: "2023-09-06",
+            Created: "2023-09-06",
+          },
+          {
+            AlarmType: "Type B",
+            AlarmGroup: "Group 2",
+            Updates: 2,
+            Amount: 75.25,
+            Severity: "Medium",
+            Updated: "2023-09-06",
+            Created: "2023-09-06",
+          },
+          // Add more objects as needed
+        ];
+        CreateDiv(subscriberAlarmDiv,data);
+      });
+      subscriberLogBtn.addEventListener("click", () => {
+        workspaceMenu.classList.add("hidden");
+        const subscriberLogsDiv = document.getElementById("subscriberLogs");
+
+        // Check if the div is already visible, and if so, do nothing
+        if (subscriberLogsDiv.classList.contains("visible")) {
+          return;
+        }
+
+        // Clear the content of the div
+        subscriberLogsDiv.innerHTML = "";
+
+        // Reset resizable and draggable
+        $("#subscriberLogs")
+          .draggable("destroy")
+          .resizable("destroy")
+          .draggable({containment: "window"})
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#subscriberLogs table").DataTable().draw();
+            },
+          });
+        subscriberLogsDiv.classList.remove("hidden");
+        subscriberLogsDiv.classList.add("visible");
+        let data = [
+          {
+            Time: "2023-09-06",
+            User: "User 1",
+            Type: "Login",
+            Detail: "User 1 logged in.",
+          },
+          {
+            Time: "2023-06-06",
+            User: "User 2",
+            Type: "Logout",
+            Detail: "User 2 logged out.",
+          },
+          // Add more objects as needed
+        ];
+        CreateDiv(subscriberLogsDiv,data);
+      });
+    </script>
+  </body>
+</html>

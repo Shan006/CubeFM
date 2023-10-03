@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css"
+    />
+    <link href="css/all.min.css" rel="stylesheet" />
+    <link href="css/fontawesome.min.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
+    <link href="fonts.css" rel="stylesheet" />
+    <style>
+      /* Add your custom CSS for icon styling here */
+      input:focus {
+        outline: none;
+        border: none;
+        /* You can also set other styles like padding and background here */
+      }
+      .search-icon {
+        cursor: pointer;
+      }
+      .search-input,
+      .search-select {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <table id="myDataTable" class="display">
+      <thead>
+        <tr>
+          <th>
+            <div class="search-column">
+              <input
+                type="text"
+                class="search-input"
+                data-column="0"
+                placeholder="Search Name"
+              />
+              <!-- Add a select box for Name column -->
+              <select
+                class="search-select"
+                data-column="0"
+                style="display: none"
+              >
+                <option value="">All Names</option>
+                <option value="Shayan">Shayan</option>
+                <option value="Ijlal">Ijlal</option>
+                <option value="Usama">Usama</option>
+                <!-- Add more options as needed -->
+              </select>
+            </div>
+          </th>
+          <th>
+            <div class="search-column">
+              <input
+                type="text"
+                class="search-input"
+                data-column="1"
+                placeholder="Search Age"
+              />
+              <!-- Add a select box for Age column -->
+              <select
+                class="search-select"
+                data-column="1"
+                style="display: none"
+              >
+                <option value="">All Ages</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="23">23</option>
+                <!-- Add more options as needed -->
+              </select>
+            </div>
+          </th>
+          <th>
+            <div class="search-column">
+              <input
+                type="text"
+                class="search-input"
+                data-column="2"
+                placeholder="Search Location"
+              />
+              <!-- Add a select box for Location column -->
+              <select
+                class="search-select"
+                data-column="2"
+                style="display: none"
+              >
+                <option value="">All Locations</option>
+                <option value="Islamabad">Islamabad</option>
+                <option value="Karachi">Karachi</option>
+                <!-- Add more options as needed -->
+              </select>
+            </div>
+          </th>
+          <!-- Add more columns as needed -->
+        </tr>
+        <tr>
+          <th>
+            Name
+            <i class="fas fa-filter search-icon ml-2" data-column="0"></i>
+          </th>
+          <th>
+            Age
+            <i class="fas fa-filter search-icon ml-2" data-column="1"></i>
+          </th>
+          <th>
+            Location
+            <i class="fas fa-filter search-icon ml-2" data-column="2"></i>
+          </th>
+          <!-- Add more column headers as needed -->
+        </tr>
+      </thead>
+      <tbody>
+        <!-- DataTable rows will be populated here -->
+        <tr>
+          <td>Shayan</td>
+          <td>20</td>
+          <td>Islamabad</td>
+        </tr>
+        <tr>
+          <td>Ijlal</td>
+          <td>21</td>
+          <td>Karachi</td>
+        </tr>
+        <tr>
+          <td>Usama</td>
+          <td>23</td>
+          <td>Islamabad</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script>
+      $(document).ready(function () {
+        var dataTable = $("#myDataTable").DataTable();
+
+        // Show/hide search input and select box on icon click
+        $(".search-icon").on("click", function (event) {
+          event.stopPropagation(); // Stop event propagation to prevent sorting
+          var columnIndex = $(this).attr("data-column");
+          var $input = $('.search-input[data-column="' + columnIndex + '"]');
+          var $select = $('.search-select[data-column="' + columnIndex + '"]');
+          $input.slideToggle();
+          $select.slideToggle();
+        });
+
+        // Apply search filter when input value changes
+        $(".search-input").on("keyup change", function () {
+          var columnIndex = $(this).attr("data-column");
+          dataTable.column(columnIndex).search($(this).val()).draw();
+        });
+
+        // Apply search filter when select box value changes
+        $(".search-select").on("change", function () {
+          var columnIndex = $(this).attr("data-column");
+          dataTable.column(columnIndex).search($(this).val()).draw();
+        });
+      });
+    </script>
+  </body>
+</html>

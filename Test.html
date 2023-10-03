@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//code.jquery.com/ui/1.11.3/jquery-ui.js"></script>
+
+    <link
+    rel="stylesheet"
+    href="//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"
+  />
+  <link
+    href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.15/dist/tailwind.min.css"
+    rel="stylesheet"
+  />
+
+    <!-- Include DataTables CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css"
+    />
+
+    <!-- Include DataTables JavaScript -->
+    <script
+      type="text/javascript"
+      charset="utf8"
+      src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"
+    ></script>
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+    integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous"
+  />
+
+  <!-- Optional theme -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+    integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous"
+  />
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+    integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"
+  ></script>
+  <link href="css/all.min.css" rel="stylesheet" />
+  <link href="css/fontawesome.min.css" rel="stylesheet" />
+  <link href="style.css" rel="stylesheet" />
+  <link href="fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <script>
+        $(document).ready(function () {
+        
+        $("#alarms")
+          .draggable()
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#alarms table").DataTable().draw();
+            },
+          });
+
+        $("#allCalls")
+          .draggable()
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#allCalls table").DataTable().draw();
+            },
+          });
+
+        $("#subscriberDetails")
+          .draggable()
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#subscriberDetails table").DataTable().draw();
+            },
+          });
+
+        $("#subscriberAlarms")
+          .draggable()
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#subscriberAlarms table").DataTable().draw();
+            },
+          });
+
+        $("#subscriberLogs")
+          .draggable()
+          .resizable({
+            handles: "all",
+            resize: function () {
+              // Redraw the DataTable when the div is resized
+              $("#subscriberLogs table").DataTable().draw();
+            },
+          });
+      });
+        function createDataTable(containerSelector, columns, data) {
+        let datesArray = ["Created", "Modified", "Updated", "Time"];
+        let rangeArray = ["Amount"];
+        let simpleNumeric = [
+          "IMSI",
+          "User",
+          "Name",
+          "PhoneNumber",
+          "ANumber",
+          "AHandset",
+          "BNumber",
+          "BHandset",
+          "DialDigit",
+          "TrunkIn",
+          "TrunkOut",
+          "DataUp",
+          "DataDown",
+        ];
+        // Create a container for the DataTable
+        var tableContainer = $("<div>").addClass("table-container");
+
+        // Create the table dynamically
+        var table = $("<table>").css("width", "100%").attr("id", "my_table");
+        var thead = $("<thead>");
+        var tbody = $("<tbody>");
+
+        var headerRow = $("<tr>");
+        for (var i = 0; i < columns.length; i++) {
+          var columnName = columns[i];
+
+          // Create a container for the column name and icon
+          var headerContent = $("<div>").addClass("header-content");
+
+          // Create the column name element
+          var columnHeader = $("<span>").text(columnName);
+
+          // Create the filter button element
+          var filterButton = $("<button>").addClass("filter-button");
+          var icon = $("<i>").addClass("fas fa-filter"); // Replace with your FontAwesome icon class
+          filterButton.append(icon);
+
+          // Add the column name and filter button to the header content container
+          headerContent.append(columnHeader, filterButton);
+
+          // Create the table header cell
+          var headerCell = $("<th>");
+
+          // Append the header content to the header cell
+          headerCell.append(headerContent);
+
+          // Add the header cell to the header row
+          headerRow.append(headerCell);
+
+          var column;
+
+          // Add an event listener for the "Filter" button click
+          filterButton.click(function (e) {
+            e.stopPropagation(); // Stop event propagation to prevent sorting
+            column = $(this).parent().find("span").text(); // Get the column
+            console.log("Column Name", column);
+            var modal = $("#filterModal");
+            modal.find(".modal-title").text("Filter");
+            modal.find("#filterColumn").text(column); // Set the column name in the modal
+
+            // Check if the column name contains "date" (case-insensitive)
+            if (rangeArray.includes(column)) {
+              // Value tab
+              modal.find(".fromToInputs").show();
+              modal.find(".value-select").hide();
+              modal.find(".fromToDates").hide();
+              // Numeric Filter tab
+              modal.find(".operator-select").show();
+              modal.find(".numeric-input").show();
+              modal.find(".date-input").hide();
+            } else if (datesArray.includes(column)) {
+              // Value tab
+              modal.find(".fromToDates").show();
+              modal.find(".fromToInputs").hide();
+              modal.find(".value-select").hide();
+              // Numeric Filter tab
+              modal.find(".date-input").show();
+              modal.find(".operator-select").hide();
+              modal.find(".numeric-input").hide();
+            } else if (simpleNumeric.includes(column)) {
+              // Value tab
+              modal.find(".value").hide();
+              // modal.find(".numeric").hide();
+              modal.find(".fromToDates").hide();
+              modal.find(".fromToInputs").hide();
+              modal.find(".value-select").hide();
+              // Numeric Filter tab
+              modal.find(".date-input").hide();
+              modal.find(".operator-select").hide();
+              modal.find(".numeric-input").show();
+            } else {
+              // Value tab
+              modal.find(".value-select").show();
+              modal.find(".fromToInputs").hide();
+              modal.find(".fromToDates").hide();
+              // Numeric Filter tab
+              modal.find(".numeric-input").show();
+              modal.find(".operator-select").hide();
+              modal.find(".date-input").hide();
+            }
+
+            modal.modal("show");
+          });
+        }
+
+        thead.append(headerRow);
+        table.append(thead);
+
+        for (var i = 0; i < data.length; i++) {
+          var row = $("<tr>");
+          for (var j = 0; j < columns.length; j++) {
+            var columnName = columns[j];
+            row.append($("<td>").text(data[i][columnName]));
+          }
+          tbody.append(row);
+        }
+
+        table.append(tbody);
+
+        // Append the table to the table container
+        tableContainer.append(table);
+
+        // Append the table container to the specified container
+        $(containerSelector).append(tableContainer);
+
+        // Initialize DataTable
+        var dataTable = table.DataTable({
+          scrollY: "100%", // Adjust as needed
+          scrollCollapse: true,
+          order: [],
+          stateSave: true,
+          stateDuration: 60 * 60 * 24 * 365 * 100,
+          responsive: true,
+          scrollX: true, // Enable horizontal scrolling
+        });
+
+        // Add event listener for the "Apply Filter" button click
+        $("#applyFilter").click(function () {
+          // For All Number Range Columns
+          if (rangeArray.includes(column)) {
+            var fromValue = $("#fromInput").val();
+            var toValue = $("#toInput").val();
+            var operator = $("#arithmeticOperatorNumeric").val(); // Get the selected operator
+            var filterValue = parseFloat($("#numericFilter").val());
+            // Value Tab
+            if (fromValue && toValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var filteredData = dataTable
+                      .rows(function (idx, data, node) {
+                        var columnValue = parseFloat(data[colIdx]);
+                        return columnValue > fromValue && columnValue < toValue;
+                      })
+                      .data()
+                      .toArray();
+
+                    console.log(filteredData);
+                    dataTable.clear();
+                    dataTable.rows.add(filteredData);
+                    dataTable.draw();
+                  }
+                });
+            }
+            // Numeric Filter Tab
+            else if (operator && filterValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var filteredData = dataTable
+                      .rows(function (idx, data, node) {
+                        var columnValue = parseFloat(data[colIdx]);
+                        switch (operator) {
+                          case "=":
+                            return columnValue === filterValue;
+                          case ">":
+                            return columnValue > filterValue;
+                          case "<":
+                            return columnValue < filterValue;
+                          case ">=":
+                            return columnValue >= filterValue;
+                          case "<=":
+                            return columnValue <= filterValue;
+                          default:
+                            // Handle other cases or return true to show all rows
+                            return true;
+                        }
+                      })
+                      .data()
+                      .toArray();
+
+                    console.log(filteredData);
+                    dataTable.clear();
+                    dataTable.rows.add(filteredData);
+                    dataTable.draw();
+                  }
+                });
+            } else if (!operator && !filterValue && !fromValue && !toValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var valuesArray = data.map(function (obj) {
+                      return Object.values(obj);
+                    });
+                    dataTable.clear();
+                    dataTable.rows.add(valuesArray);
+                    dataTable.draw();
+                  }
+                });
+            }
+          }
+          // For All Date Columns
+          else if (datesArray.includes(column)) {
+            var fromValue = $("#fromDatePicker").val();
+            var toValue = $("#toDatePicker").val();
+            var filterValue = $("#dateFilter").val(); // Get the filter value as a number
+            // Value Tab
+            if (fromValue && toValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    filteredDates = data.filter(function (item) {
+                      var itemDate = new Date(item[column]);
+                      return (
+                        itemDate > new Date(fromValue) &&
+                        itemDate < new Date(toValue)
+                      );
+                    });
+
+                    var filteredValues = filteredDates.map(function (item) {
+                      return Object.values(item);
+                    });
+
+                    console.log(filteredValues);
+                    dataTable.clear();
+                    dataTable.rows.add(filteredValues);
+                    dataTable.draw();
+                  }
+                });
+            }
+            // Numeric Filter Tab
+            else if (filterValue) {
+              console.log("FilterValue", filterValue);
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    filteredDates = data.filter(function (item) {
+                      var itemDate = new Date(item[column]);
+                      var filterDate = new Date(filterValue);
+
+                      // Compare the date parts of the two Date objects
+                      return (
+                        itemDate.getDate() === filterDate.getDate() &&
+                        itemDate.getMonth() === filterDate.getMonth() &&
+                        itemDate.getFullYear() === filterDate.getFullYear()
+                      );
+                    });
+
+                    console.log(filteredDates);
+
+                    var filteredValues = filteredDates.map(function (item) {
+                      return Object.values(item);
+                    });
+
+                    console.log(filteredValues);
+                    dataTable.clear();
+                    dataTable.rows.add(filteredValues);
+                    dataTable.draw();
+                  }
+                });
+            } else if (!fromValue && !toValue && !filterValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    var valuesArray = data.map(function (obj) {
+                      return Object.values(obj);
+                    });
+                    dataTable.clear();
+                    dataTable.rows.add(valuesArray);
+                    dataTable.draw();
+                  }
+                });
+            }
+          } else if (simpleNumeric.includes(column)) {
+            var numericFilterValue = $("#numericFilter").val();
+            if (numericFilterValue) {
+              dataTable
+                .columns()
+                .eq(0)
+                .each(function (colIdx) {
+                  var columnInfo = dataTable.column(colIdx);
+                  if (columnInfo.header().textContent === column) {
+                    columnInfo.search(numericFilterValue).draw();
+                  }
+                });
+            }
+          }
+          // For All Other General Columns
+          else {
+            var selectBoxValue = $("#filterSelect").val(); // Get the select box value
+            var numericFilterValue = $("#numericFilter").val(); // Get the numeric filter value
+
+            // Initialize a variable to store the filter value
+            var filterValue;
+
+            if (selectBoxValue !== "") {
+              filterValue = selectBoxValue; // Use the select box value
+            } else {
+              filterValue = numericFilterValue; // Use the numeric filter value
+            }
+            dataTable
+              .columns()
+              .eq(0)
+              .each(function (colIdx) {
+                var columnInfo = dataTable.column(colIdx);
+                if (columnInfo.header().textContent === column) {
+                  columnInfo.search(filterValue).draw();
+                }
+              });
+          }
+
+          // Close the modal
+          $("#filterModal").modal("hide");
+        });
+
+        // Add row click event handler
+        table.on("click", "tbody tr", function () {
+          // Remove the 'selected' class from all rows
+          table.find("tbody tr").removeClass("selected");
+
+          // Add the 'selected' class to the clicked row
+          $(this).addClass("selected");
+
+          // Get the data for the clicked row
+          var rowData = dataTable.row(this).data();
+
+          // Perform your action here, for example, log the data to the console
+          console.log("Row Data:", rowData);
+          // Replace this with your desired action on row click
+        });
+
+        tableContainer.on("scroll", function () {
+          var scrollLeft = $(this).scrollLeft();
+          table
+            .find("thead th")
+            .css("transform", "translateX(" + -scrollLeft + "px)");
+        });
+
+        function adjustDataTableWidth() {
+          var containerWidth = tableContainer.width();
+          console.log("containerWidth",containerWidth)
+          table.css("width", containerWidth); // Set body width to match the container
+          dataTable.columns.adjust().draw();
+
+          // Explicitly set the header's width to match the body's width
+          var headerWidth = table.find("thead").width();
+          console.log("headerWidth",headerWidth)
+          table.find("thead").css("width", headerWidth);
+        }
+
+        
+        // Function to adjust the DataTable height
+        function adjustDataTableHeight() {
+        var containerHeight = tableContainer.height();
+        dataTable.scrollY = containerHeight + "px"; // Set the DataTable's scrollY to match the container's height
+        dataTable.draw(false); // Redraw the DataTable without clearing existing data
+      }
+
+        // Adjust the DataTable width when the div is resized
+        // Attach event handler to window resize
+      $(window).on("resize", function () {
+        console.log("Called")
+        adjustDataTableWidth();
+        adjustDataTableHeight()
+      });
+            // Call both functions initially
+        adjustDataTableWidth();
+        adjustDataTableHeight();
+
+      }
+      window.addEventListener('load', function() {
+    const divDataJSON = localStorage.getItem('divData');
+    if (divDataJSON) {
+    const divData = JSON.parse(divDataJSON);
+
+    console.log(divData);
+
+    Object.keys(divData).forEach(id => {
+      const div = document.getElementById(id);
+      const { width, height, dataTableState } = divData[id];
+      div.classList.remove("hidden");
+
+      div.style.width = `${width}px`;
+      div.style.height = `${height}px`;
+
+      // Make the div visible if it has dimensions
+      if (width > 0 && height > 0) {
+        div.classList.remove('hidden');
+      }
+      createWholeAlarmDiv(div);
+
+
+    //   const existingDataTable = $(`#${id}`).find('table').DataTable().state();
+    //   console.log("existingDataTable",existingDataTable);
+    });
+  }
+});
+    </script>
+    <div class="flex justify-between">
+        <!-- Workspace Button -->
+        <button
+          id="workspace-button"
+          class="bg-gray-200 hover:bg-gray-300 text-black font-semibold px-4 py-2 rounded"
+        >
+          <i class="fas fa-briefcase text-blue-400"></i>
+          Workspace
+        </button>
+
+        <button id="save-button" class="bg-gray-200 text-black hover:bg-blue-300 font-semibold px-4 py-2 rounded">
+          <i class="fas fa-floppy-disk text-green-400"></i>
+          Save
+        </button>
+        <button id="unsave-button" class="bg-gray-200 text-black hover:bg-blue-300 font-semibold px-4 py-2 rounded">
+          <i class="fas fa-box-archive text-red-600"></i>
+          UnSave
+        </button>
+
+      </div>
+
+        <!-- Toggle Menu -->
+        <div
+          id="workspace-menu"
+          class="hidden absolute top-16 left-4 bg-white p-4 border shadow-lg rounded z-10"
+        >
+          <button class="block w-full mb-2 text-left text-gray-800" id="alarm">
+            Alarms
+          </button>
+          <button class="block w-full mb-2 text-left text-gray-800" id="calls">
+            All Calls
+          </button>
+          <button
+            class="block w-full mb-2 text-left text-gray-800"
+            id="subscriberdetail"
+          >
+            Subscriber Details
+          </button>
+          <button
+            class="block w-full mb-2 text-left text-gray-800"
+            id="subscriberalarm"
+          >
+            Subscriber Alarms
+          </button>
+          <button
+            class="block w-full text-left text-gray-800"
+            id="subscriberlog"
+          >
+            Subscriber Logs
+          </button>
+        </div>
+      </div>
+    </nav>
+    <div class="content w-full">
+      <div id="alarms" class="divs ui-widget-content m-6 hidden">
+      </div>
+      <div id="allCalls" class="divs ui-widget-content m-6 hidden"></div>
+      <div
+        id="subscriberDetails"
+        class="divs ui-widget-content m-6 hidden"
+      ></div>
+      <div
+        id="subscriberAlarms"
+        class="divs ui-widget-content m-6 hidden"
+      ></div>
+      <div id="subscriberLogs" class="divs ui-widget-content m-6 hidden"></div>
+    </div>
+    <script>
+        const createWholeAlarmDiv = (alarmsDiv) => {
+            const h1 = document.createElement("h1");
+          const strong = document.createElement("strong");
+          if(alarmsDiv.id === "alarms"){
+            strong.textContent = "Alarms";
+          }else if(alarmsDiv.id === "allCalls"){
+            strong.textContent = "All Calls";
+          }
+          h1.classList.add("mb-5");
+          h1.appendChild(strong);
+          alarmsDiv.appendChild(h1);
+          const MaxMinIcon = document.createElement("i");
+          MaxMinIcon.classList.add("fas", "fa-toggle-off","text-black","cursor-pointer");
+          MaxMinIcon.classList.add("toggleMaximize");
+          MaxMinIcon.addEventListener("click",()=>{
+            var div = alarmsDiv; // Get the parent div of the clicked button
+            if (div.offsetWidth === 978 || div.offsetWidth === 1366 && div.offsetHeight === 690 || div.offsetHeight === 651) {
+            console.log("Restore");
+            restoreDiv(div);
+          } else {
+            console.log("Maximize");
+            maximizeDiv(div);
+          }
+          })
+          alarmsDiv.appendChild(MaxMinIcon);
+          const crossButton = document.createElement("button");
+          crossButton.textContent = "X";
+          crossButton.classList.add("close-button");
+          crossButton.addEventListener("click", () => {
+            alarmsDiv.classList.remove("visible");
+            alarmsDiv.classList.add("hidden");
+          });
+          alarmsDiv.appendChild(crossButton);
+          var columns;
+          var data;
+          // Call the function to create the DataTable
+          if(alarmsDiv.id === "alarms"){
+            columns = [
+            "Status",
+            "User",
+            "IMSI",
+            "Amount",
+            "Name",
+            "Created",
+            "PhoneNumber",
+            "SubscriberTypeId",
+            "AlarmType",
+            "AlarmGroup",
+            "Info",
+          ];
+          data = [
+            {
+              Status: "Assigned",
+              User: "User 1",
+              IMSI: "IMSI 1",
+              Amount: 100,
+              Name: "Name 1",
+              Created: "2023-09-06",
+              PhoneNumber: "Phone 1",
+              SubscriberTypeId: 1,
+              AlarmType: "Type 1",
+              AlarmGroup: "Group 1",
+              Info: "Info 1",
+            },
+            {
+              Status: "Open",
+              User: "User 2",
+              IMSI: "IMSI 2",
+              Amount: 200,
+              Name: "Name 2",
+              Created: "2023-06-06",
+              PhoneNumber: "Phone 2",
+              SubscriberTypeId: 2,
+              AlarmType: "Type 2",
+              AlarmGroup: "Group 2",
+              Info: "Info 2",
+            },
+            // Add more objects as needed
+          ];
+          }else if(alarmsDiv.id === "allCalls"){
+          columns = [
+          "Duration",
+          "PrepaidCharge",
+          "DataDown",
+          "DataUp",
+          "PrepaidBalance",
+          "Classification",
+          "ANumber",
+          "ANumberHandset",
+          "BNumber",
+          "BNumberHandset",
+          "Country",
+          "DialDigit",
+          "APN",
+          "Company",
+          "FirstCell",
+          "TrunkIn",
+          "TrunkOut",
+          "ExchangeId",
+        ];
+        data = [
+          {
+            Duration: 120,
+            PrepaidCharge: 25.5,
+            DataDown: 500,
+            DataUp: 300,
+            PrepaidBalance: 50.75,
+            Classification: "Class A",
+            ANumber: "123456789",
+            ANumberHandset: "Handset A",
+            BNumber: "987654321",
+            BNumberHandset: "Handset B",
+            Country: "USA",
+            DialDigit: "9",
+            APN: "internet",
+            Company: "Company XYZ",
+            FirstCell: "Cell Tower 1",
+            TrunkIn: "Trunk In 1",
+            TrunkOut: "Trunk Out 1",
+            ExchangeId: "Exchange 1",
+          },
+          {
+            Duration: 180,
+            PrepaidCharge: 35.0,
+            DataDown: 800,
+            DataUp: 400,
+            PrepaidBalance: 45.25,
+            Classification: "Class B",
+            ANumber: "555555555",
+            ANumberHandset: "Handset C",
+            BNumber: "666666666",
+            BNumberHandset: "Handset D",
+            Country: "Canada",
+            DialDigit: "8",
+            APN: "web",
+            Company: "Company ABC",
+            FirstCell: "Cell Tower 2",
+            TrunkIn: "Trunk In 2",
+            TrunkOut: "Trunk Out 2",
+            ExchangeId: "Exchange 2",
+          },
+          // Add more objects as needed
+        ];
+          }
+          createDataTable(alarmsDiv, columns, data);
+        }
+
+        const workspaceButton = document.getElementById("workspace-button");
+        const workspaceMenu = document.getElementById("workspace-menu");
+        const alarmsBtn = document.getElementById("alarm");
+        const callsBtn = document.getElementById("calls");
+        const subscriberDetailBtn = document.getElementById("subscriberdetail");
+        const subscriberAlarmBtn = document.getElementById("subscriberalarm");
+        const subscriberLogBtn = document.getElementById("subscriberlog");
+        workspaceButton.addEventListener("click", () => {
+          workspaceMenu.classList.toggle("hidden");
+        });
+        document.getElementById('save-button').addEventListener('click', function() {
+        const divs = document.querySelectorAll('.divs:not(.hidden)');
+        const divData = {};
+  
+        divs.forEach(div => {
+          const id = div.id;
+          const width = div.offsetWidth;
+          const height = div.offsetHeight;
+  
+          console.log(id);
+  
+          // Save DataTable state if DataTable is present
+          // const dataTable = $(`#${id}`).find('table').DataTable();
+          // console.log(dataTable);
+          // const dataTableState = dataTable ? dataTable.state.save() : null;
+  
+          divData[id] = {
+            width,
+            height,
+            // dataTableState
+          };
+        });
+  
+        localStorage.setItem('divData', JSON.stringify(divData));
+        alert('Div sizes and DataTable states saved successfully!');
+      });
+  
+      document.getElementById('unsave-button').addEventListener('click', function() {
+        localStorage.removeItem("divData");
+        alert("Div sizes and DataTable states unsaved successfully!")
+      })
+  
+  
+        const originalWidths = {}; // Store original widths for each div
+  
+        // Function to maximize the div
+        function maximizeDiv(div) {
+          let toggleBtn = document.getElementsByClassName("toggleMaximize");
+  
+          // Iterate through the collection and add/remove classes
+          for (let i = 0; i < toggleBtn.length; i++) {
+            let btn = toggleBtn[i];
+            btn.classList.add("fa-toggle-on");
+            btn.classList.remove("fa-toggle-off");
+          }
+          const divId = div.id;
+          const styles = window.getComputedStyle(div);
+          originalWidths[divId] = div.offsetWidth; // Store the original width
+          originalWidths[divId + "-height"] = div.offsetHeight; // Store the original height
+          originalWidths[divId + "-margin"] = styles.margin; // Store the original margin
+          originalWidths[divId + "-padding"] = styles.padding; // Store the original padding
+          originalWidths[divId + "-top"] = styles.top; // Store the original top position
+          originalWidths[divId + "-left"] = styles.left; // Store the original left position
+          
+          div.style.width = "100vw";
+          div.style.height = "100vh";
+          div.style.position = "fixed";
+          div.style.left = 0;
+          div.style.top = 0;
+          div.style.margin = 0;
+          div.style.padding = "10px";
+        }
+  
+        // Function to restore the div to its original dimensions and position
+        function restoreDiv(div) {
+          let toggleBtn = document.getElementsByClassName("toggleMaximize");
+  
+          // Iterate through the collection and add/remove classes
+          for (let i = 0; i < toggleBtn.length; i++) {
+            let btn = toggleBtn[i];
+            btn.classList.add("fa-toggle-off");
+            btn.classList.remove("fa-toggle-on");
+          }
+          const divId = div.id;
+          const originalWidth = originalWidths[divId];
+          const originalHeight = originalWidths[divId + "-height"];
+          const originalMargin = originalWidths[divId + "-margin"];
+          const originalPadding = originalWidths[divId + "-padding"];
+          const originalTop = originalWidths[divId + "-top"];
+          const originalLeft = originalWidths[divId + "-left"];
+          if (originalWidth !== undefined && originalHeight !== undefined) {
+          div.style.width = originalWidth + "px";
+          div.style.height = originalHeight + "px";
+          div.style.left = originalLeft;
+          div.style.top = originalTop;
+          div.style.margin = originalMargin;
+          div.style.padding = originalPadding;
+          }
+        }
+  
+        alarmsBtn.addEventListener("click", () => {
+          workspaceMenu.classList.add("hidden");
+          const alarmsDiv = document.getElementById("alarms");
+          // Clear the content of the div
+          alarmsDiv.innerHTML = "";
+  
+          // Reset resizable and draggable
+          $("#alarms")
+            .draggable("destroy")
+            .resizable("destroy")
+            .draggable()
+            .resizable({
+              handles: "all",
+              resize: function () {
+                // Redraw the DataTable when the div is resized
+                $("#alarms table").DataTable().draw();
+              },
+            });
+          alarmsDiv.classList.remove("hidden");
+          alarmsDiv.classList.add("visible");
+          createWholeAlarmDiv(alarmsDiv);
+        });
+        callsBtn.addEventListener("click", () => {
+          workspaceMenu.classList.add("hidden");
+          const callsDiv = document.getElementById("allCalls");
+          // Clear the content of the div
+          callsDiv.innerHTML = "";
+  
+          // Reset resizable and draggable
+          $("#allCalls")
+            .draggable("destroy")
+            .resizable("destroy")
+            .draggable()
+            .resizable({
+              handles: "all",
+              resize: function () {
+                // Redraw the DataTable when the div is resized
+                $("#allCalls table").DataTable().draw();
+              },
+            });
+          callsDiv.classList.remove("hidden");
+          callsDiv.classList.add("visible");
+        
+          // Call the function to create the DataTable
+          createWholeAlarmDiv(callsDiv);
+        });
+        subscriberDetailBtn.addEventListener("click", () => {
+          workspaceMenu.classList.add("hidden");
+          const subscriberDetailDiv =
+            document.getElementById("subscriberDetails");
+          // Clear the content of the div
+          subscriberDetailDiv.innerHTML = "";
+  
+          // Reset resizable and draggable
+          $("#subscriberDetails")
+            .draggable("destroy")
+            .resizable("destroy")
+            .draggable()
+            .resizable({
+              handles: "all",
+              resize: function () {
+                // Redraw the DataTable when the div is resized
+                $("#subscriberDetails table").DataTable().draw();
+              },
+            });
+          subscriberDetailDiv.classList.remove("hidden");
+          subscriberDetailDiv.classList.add("visible");
+          const h1 = document.createElement("h1");
+          const strong = document.createElement("strong");
+          strong.textContent = "Subscriber Details";
+          h1.classList.add("mb-5");
+          h1.appendChild(strong);
+          subscriberDetailDiv.appendChild(h1);
+          const MaxMinIcon = document.createElement("i");
+          MaxMinIcon.classList.add("fas", "fa-toggle-off","text-black","cursor-pointer");
+          MaxMinIcon.classList.add("toggleMaximize");
+          MaxMinIcon.addEventListener("click",()=>{
+            var div = subscriberDetailDiv; // Get the parent div of the clicked button
+            if (div.offsetWidth === 978 || div.offsetWidth === 1366 && div.offsetHeight === 690 || div.offsetHeight === 651) {
+            console.log("Restore");
+            console.log(div.offsetWidth);
+            console.log(div.offsetHeight);
+            restoreDiv(div);
+          } else {
+            console.log("Maximize");
+            console.log(div.offsetWidth);
+            console.log(div.offsetHeight);
+            maximizeDiv(div);
+          }
+          })
+          subscriberDetailDiv.appendChild(MaxMinIcon);
+          const crossButton = document.createElement("button");
+          crossButton.textContent = "X";
+          crossButton.classList.add("close-button");
+          crossButton.addEventListener("click", () => {
+            subscriberDetailDiv.classList.remove("visible");
+            subscriberDetailDiv.classList.add("hidden");
+          });
+          subscriberDetailDiv.appendChild(crossButton);
+          var columns = ["CallType", "Value", "State", "ModifiedBy", "Modified"];
+          var data = [
+            {
+              CallType: "Incoming",
+              Value: "123-456-7890",
+              State: "Connected",
+              ModifiedBy: "User A",
+              Modified: "2023-09-06",
+            },
+            {
+              CallType: "Outgoing",
+              Value: "987-654-3210",
+              State: "Disconnected",
+              ModifiedBy: "User B",
+              Modified: "2023-09-06",
+            },
+            // Add more objects as needed
+          ];
+  
+          // Call the function to create the DataTable
+          createDataTable("#subscriberDetails", columns, data);
+        });
+        subscriberAlarmBtn.addEventListener("click", () => {
+          workspaceMenu.classList.add("hidden");
+          const subscriberAlarmDiv = document.getElementById("subscriberAlarms");
+          // Clear the content of the div
+          subscriberAlarmDiv.innerHTML = "";
+  
+          // Reset resizable and draggable
+          $("#subscriberAlarms")
+            .draggable("destroy")
+            .resizable("destroy")
+            .draggable()
+            .resizable({
+              handles: "all",
+              resize: function () {
+                // Redraw the DataTable when the div is resized
+                $("#subscriberAlarms table").DataTable().draw();
+              },
+            });
+          subscriberAlarmDiv.classList.remove("hidden");
+          subscriberAlarmDiv.classList.add("visible");
+          const h1 = document.createElement("h1");
+          const strong = document.createElement("strong");
+          strong.textContent = "Subscriber Alarms";
+          h1.classList.add("mb-5");
+          h1.appendChild(strong);
+          subscriberAlarmDiv.appendChild(h1);
+          const MaxMinIcon = document.createElement("i");
+          MaxMinIcon.classList.add("fas", "fa-toggle-off","text-black","cursor-pointer");
+          MaxMinIcon.classList.add("toggleMaximize");
+          MaxMinIcon.addEventListener("click",()=>{
+            var div = subscriberAlarmDiv; // Get the parent div of the clicked button
+            if (div.offsetWidth === 978 || div.offsetWidth === 1366 && div.offsetHeight === 690 || div.offsetHeight === 651) {
+            console.log("Restore");
+            console.log(div.offsetWidth);
+            console.log(div.offsetHeight);
+            restoreDiv(div);
+          } else {
+            console.log("Maximize");
+            console.log(div.offsetWidth);
+            console.log(div.offsetHeight);
+            maximizeDiv(div);
+          }
+          })
+          subscriberAlarmDiv.appendChild(MaxMinIcon);
+          const crossButton = document.createElement("button");
+          crossButton.textContent = "X";
+          crossButton.classList.add("close-button");
+          crossButton.addEventListener("click", () => {
+            subscriberAlarmDiv.classList.remove("visible");
+            subscriberAlarmDiv.classList.add("hidden");
+          });
+          subscriberAlarmDiv.appendChild(crossButton);
+          var columns = [
+            "AlarmType",
+            "AlarmGroup",
+            "Updates",
+            "Amount",
+            "Severity",
+            "Updated",
+            "Created",
+          ];
+          var data = [
+            {
+              AlarmType: "Type A",
+              AlarmGroup: "Group 1",
+              Updates: 3,
+              Amount: 100.5,
+              Severity: "High",
+              Updated: "2023-09-06",
+              Created: "2023-09-06",
+            },
+            {
+              AlarmType: "Type B",
+              AlarmGroup: "Group 2",
+              Updates: 2,
+              Amount: 75.25,
+              Severity: "Medium",
+              Updated: "2023-09-06",
+              Created: "2023-09-06",
+            },
+            // Add more objects as needed
+          ];
+  
+          // Call the function to create the DataTable
+          createDataTable("#subscriberAlarms", columns, data);
+        });
+        subscriberLogBtn.addEventListener("click", () => {
+          workspaceMenu.classList.add("hidden");
+          const subscriberLogsDiv = document.getElementById("subscriberLogs");
+  
+          // Clear the content of the div
+          subscriberLogsDiv.innerHTML = "";
+  
+          // Reset resizable and draggable
+          $("#subscriberLogs")
+            .draggable("destroy")
+            .resizable("destroy")
+            .draggable()
+            .resizable({
+              handles: "all",
+              resize: function () {
+                // Redraw the DataTable when the div is resized
+                $("#subscriberLogs table").DataTable().draw();
+              },
+            });
+          subscriberLogsDiv.classList.remove("hidden");
+          subscriberLogsDiv.classList.add("visible");
+          const h1 = document.createElement("h1");
+          const strong = document.createElement("strong");
+          strong.textContent = "Subscriber Logs";
+          h1.classList.add("mb-5");
+          h1.appendChild(strong);
+          subscriberLogsDiv.appendChild(h1);
+          const MaxMinIcon = document.createElement("i");
+          MaxMinIcon.classList.add("fas", "fa-toggle-off","text-black","cursor-pointer");
+          MaxMinIcon.classList.add("toggleMaximize");
+          MaxMinIcon.addEventListener("click",()=>{
+            var div = subscriberLogsDiv; // Get the parent div of the clicked button
+            if (div.offsetWidth === 978 || div.offsetWidth === 1366 && div.offsetHeight === 690 || div.offsetHeight === 651) {
+            console.log("Restore");
+            console.log(div.offsetWidth);
+            console.log(div.offsetHeight);
+            restoreDiv(div);
+          } else {
+            console.log("Maximize");
+            console.log(div.offsetWidth);
+            console.log(div.offsetHeight);
+            maximizeDiv(div);
+          }
+          })
+          subscriberLogsDiv.appendChild(MaxMinIcon);
+          const crossButton = document.createElement("button");
+          crossButton.textContent = "X";
+          crossButton.classList.add("close-button");
+          crossButton.addEventListener("click", () => {
+            subscriberLogsDiv.classList.remove("visible");
+            subscriberLogsDiv.classList.add("hidden");
+          });
+          subscriberLogsDiv.appendChild(crossButton);
+          var columns = ["Time", "User", "Type", "Detail"];
+          var data = [
+            {
+              Time: "2023-09-06",
+              User: "User 1",
+              Type: "Login",
+              Detail: "User 1 logged in.",
+            },
+            {
+              Time: "2023-06-06",
+              User: "User 2",
+              Type: "Logout",
+              Detail: "User 2 logged out.",
+            },
+            // Add more objects as needed
+          ];
+  
+          // Call the function to create the DataTable
+          createDataTable("#subscriberLogs", columns, data);
+        });
+      </script>
+  </body>
+</html>

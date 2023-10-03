@@ -1,0 +1,71 @@
+<a href="specific.html" class="click-div-link cursor-pointer">
+  <div class="specific flex items-center mt-2 click-div">
+    <i class="fas fa-bullseye text-blue-400"></i>
+    <label class="ml-2">Specific</label>
+  </div>
+</a>
+<!-- Profiling -->
+<a href="profiling.html" class="click-div-link cursor-pointer">
+  <div class="profiling flex items-center mt-2 click-div">
+    <i class="fas fa-user-circle text-green-400"></i>
+    <label class="ml-2">Profiling</label>
+  </div>
+</a>
+<!-- Generic -->
+<a href="GenericAlarm.php" class="click-div-link cursor-pointer">
+  <div class="generic flex items-center mt-2 click-div active focused">
+    <i class="fas fa-cubes text-gray-600"></i>
+    <label class="ml-2">Generic</label>
+  </div>
+</a>
+<!-- Subsets -->
+<a href="subsets.html" class="click-div-link cursor-pointer">
+  <div class="subsets flex items-center mt-2 click-div">
+    <i class="fas fa-code-branch text-blue-800"></i>
+    <label class="ml-2">Subsets</label>
+  </div>
+</a>
+<!-- Lists -->
+<a href="lists.html" class="click-div-link cursor-pointer">
+  <div class="lists flex items-center mt-2 click-div">
+    <i class="fas fa-list-ul text-gray-500"></i>
+    <label class="ml-2">Lists</label>
+  </div>
+</a>
+<!-- Groups -->
+<a href="groups.html" class="click-div-link cursor-pointer">
+  <div class="groups flex items-center mt-2 click-div">
+    <i class="fas fa-users text-red-500"></i>
+    <label class="ml-2">Groups</label>
+  </div>
+</a>
+
+<script>
+  const clickDivLinks = document.querySelectorAll(".click-div-link");
+  const defaultActive = document.querySelector(".click-div.active");
+  defaultActive.style.backgroundColor = "#ffffff";
+  defaultActive.style.padding = "1px";
+  defaultActive.style.borderRadius = "5px";
+
+  clickDivLinks.forEach((link) => {
+    link.addEventListener("click", function (event) {
+      event.preventDefault();
+      const href = link.getAttribute("href");
+      window.location.href = href;
+    });
+  });
+  const clickDivs = document.querySelectorAll(".click-div");
+
+  clickDivs.forEach((div) => {
+    div.addEventListener("click", function () {
+      clickDivs.forEach((d) => {
+        d.style.backgroundColor = "";
+        d.style.padding = "0px"; // Set the desired padding value
+        d.style.borderRadius = "0px"; // Set the desired border radius value
+      });
+      this.style.backgroundColor = "#ffffff"; // Change to desired color
+      this.style.padding = "1px"; // Change to desired padding value
+      this.style.borderRadius = "5px"; // Change to desired border radius value
+    });
+  });
+</script>

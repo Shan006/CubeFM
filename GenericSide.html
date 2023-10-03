@@ -1,0 +1,997 @@
+<style>
+  .custom-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .custom-table th,
+  .custom-table td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .custom-table th {
+    border-right: 1px solid #ccc;
+  }
+
+  /* Hide the default dropdown arrow */
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    background-position: right center;
+    background-repeat: no-repeat;
+  }
+
+  /* Add a custom icon for the select */
+  select::after {
+    content: "\f078"; /* Unicode for the fa-chevron-down icon */
+    font-family: "Font Awesome 5 Free"; /* Use the appropriate Font Awesome font-family */
+    position: absolute;
+    right: 0.5rem; /* Adjust as needed */
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #333; /* Adjust icon color as needed */
+  }
+</style>
+<div class="general h-32 bg-gray-100 p-2">
+  <div class="flex items-center">
+    <p id="ID" class="text-black"></p>
+    <i class="fas fa-info-circle mr-2 text-blue-300"></i>
+    <h1>General</h1>
+  </div>
+  <table class="mt-2">
+    <tr>
+      <td><label for="name" class="label">Name:</label></td>
+      <td>
+        <input
+          type="text"
+          id="name"
+          name="alert"
+          class="input border border-gray-400 ml-3"
+          style="width: 60rem"
+        />
+      </td>
+    </tr>
+    <tr>
+      <td><label for="type" class="label">Type:</label></td>
+      <td>
+        <select
+          id="type"
+          name="type"
+          class="input border border-gray-400 ml-3"
+          style="width: 60rem"
+        >
+          <option value="Select">Select</option>
+          <option value="Low">Generic</option>
+          <option value="Medium">Profiling</option>
+          <option value="High">Subsets</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td><label for="severity" class="label">Severity:</label></td>
+      <td>
+        <select
+          id="severity"
+          name="severity"
+          class="input border border-gray-400 ml-3"
+          style="width: 60rem"
+        >
+          <option value="Select">Select</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+          <option value="Critical">Critical</option>
+        </select>
+      </td>
+    </tr>
+  </table>
+</div>
+<!-- First part -->
+<div
+  class="limits h-48 bg-gray-100 border-t-4 border-white p-2 overflow-y-auto"
+>
+  <div class="flex items-center">
+    <i class="fas fa-chart-line mr-2 text-red-700"></i>
+    <h1>Limits</h1>
+  </div>
+  <table class="custom-table mt-2">
+    <colgroup>
+      <col style="width: 1%" />
+      <col style="width: 80%" />
+      <col />
+    </colgroup>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="checkbox" /></td>
+        <td>Time Period</td>
+        <td><input type="number" /></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" /></td>
+        <td>Amount</td>
+        <td><input type="number" /></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" /></td>
+        <td>Number of Events</td>
+        <td><input type="number" /></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!-- Second part -->
+<div class="rules h-48 bg-gray-100 border-t-4 border-white p-2">
+  <div class="flex items-center">
+    <i class="fas fa-ruler mr-2 text-purple-500"></i>
+    <h1>Rules</h1>
+  </div>
+  <div class="flex items-center mt-2">
+    <select class="bg-gray-100">
+      <option value="OR">OR</option>
+      <option value="AND">AND</option>
+    </select>
+    <i
+      class="fas fa-balance-scale ml-3 text-green-900 cursor-pointer"
+      id="singleRule"
+    ></i>
+    <i
+      class="fas fa-users ml-3 text-green-600 cursor-pointer"
+      id="groupRule"
+    ></i>
+  </div>
+  <div class="overflow-y-auto mt-1" id="filterRulesContainer"></div>
+</div>
+<!-- Third part -->
+<div class="comments h-24 bg-gray-100 border-t-4 border-white p-2">
+  <div class="flex items-center">
+    <i class="fas fa-comments mr-2 text-blue-700"></i>
+    <h1>Comments</h1>
+  </div>
+  <textarea
+    class="w-full mt-2 p-2 border border-gray-400 rounded-md"
+    rows="1"
+    placeholder="Write your comment here..."
+  ></textarea>
+</div>
+<!-- Fourth part -->
+<div class="comments h-10 bg-gray-100 border-t-4 border-white p-1">
+  <div class="flex items-center float-right mr-4 mt-1 cursor-pointer" id="Save">
+    <i class="fas fa-save mr-2 text-green-600"></i>
+    <h1>Save & Close</h1>
+  </div>
+  <div class="flex items-center float-right mr-4 mt-1 cursor-pointer">
+    <i class="fas fa-save mr-2 text-green-600"></i>
+    <h1>Apply</h1>
+  </div>
+</div>
+<!-- Fifth part -->
+
+<script>
+  // array to manage our rules data
+  let filterRules = [];
+  // container in which we are showing rules
+  const filterRulesContainer = document.getElementById("filterRulesContainer");
+  // Single rule addition button
+  const singleRule = document.getElementById("singleRule");
+  singleRule.addEventListener("click", () => handleAddRule());
+
+  // Group rule addition button
+  const groupRule = document.getElementById("groupRule");
+  groupRule.addEventListener("click", () => handleAddGroup());
+
+  // Debugging Purpose
+  const savBtn = document.getElementById("Save");
+
+  savBtn.addEventListener("click", () => {
+    console.log("Data", filterRules);
+  });
+
+  // to create any DOM element e.g div, h1 etc
+  const createDOMElement = (tag, attributes) => {
+    const element = document.createElement(tag);
+    for (const key in attributes) {
+      element.setAttribute(key, attributes[key]);
+    }
+    return element;
+  };
+
+  // add a single rule
+  const handleAddRule = () => {
+    const newRule = {
+      type: "Single",
+      column: "",
+      field: "",
+      operator: "",
+      source: "",
+      value: "",
+    };
+    filterRules.push(newRule);
+    render();
+  };
+
+  // Delete a single rule
+  const handleDeleteRule = (index) => {
+    filterRules.splice(index, 1);
+    render();
+  };
+
+  // Change in a single rule
+  const handleRuleChange = (index, field, value) => {
+    filterRules[index][field] = value;
+    render();
+  };
+
+  //
+  //
+
+  const handleRuleChangeForGroup = (groupIndex, ruleIndex, field, value) => {
+    filterRules[groupIndex].rules[ruleIndex] = {
+      ...filterRules[groupIndex].rules[ruleIndex],
+      [field]: value,
+    };
+    render();
+  };
+
+  const handleAddGroup = () => {
+    const newGroupRule = {
+      type: "Group",
+      rules: [],
+    };
+    filterRules.push(newGroupRule);
+    render();
+  };
+
+  const handleAddRuleToGroup = (groupIndex) => {
+    const newRule = {
+      type: "Single",
+      column: "",
+      field: "",
+      operator: "",
+      source: "",
+      value: "",
+    };
+    filterRules[groupIndex].rules.push(newRule);
+    render();
+  };
+
+  const handleDeleteRuleFromGroup = (groupIndex, ruleIndex) => {
+    filterRules[groupIndex].rules.splice(ruleIndex, 1);
+    render();
+  };
+
+  const handleDeleteGroup = (groupIndex) => {
+    filterRules.splice(groupIndex, 1);
+    render();
+  };
+
+  const handleAddGroupToGroup = (groupIndex) => {
+    const newGroupRule = {
+      type: "Group",
+      rules: [],
+    };
+    filterRules[groupIndex].rules.push(newGroupRule);
+    render();
+  };
+
+  const handleDeleteGroupFromGroup = (parentGroupIndex, groupIndex) => {
+    filterRules[parentGroupIndex].rules.splice(groupIndex, 1);
+    render();
+  };
+
+  const handleGroupChangeForGroup = (
+    parentGroupIndex,
+    groupIndex,
+    field,
+    value
+  ) => {
+    filterRules[parentGroupIndex].rules[groupIndex] = {
+      ...filterRules[parentGroupIndex].rules[groupIndex],
+      [field]: value,
+    };
+    render();
+  };
+
+  //
+  //
+
+  // Function to create a select element with options
+  const createSelectWithOptions = (options, changeHandler, textColor) => {
+    const selectElement = createDOMElement("select", {
+      class: "filter-field bg-gray-100",
+      style: `color: ${textColor};`, // Set the text color dynamically
+    });
+    selectElement.addEventListener("change", changeHandler);
+
+    options.forEach((option) => {
+      const optionElement = createDOMElement("option", { value: option.value });
+      optionElement.textContent = option.label;
+      selectElement.appendChild(optionElement);
+    });
+
+    return selectElement;
+  };
+
+  // rule column
+  const column = [
+    { label: "Select Source", value: "" },
+    { label: "CDR", value: "CDR" },
+    { label: "Subscriber", value: "Subscriber" },
+    { label: "Subset", value: "Subset" },
+  ];
+
+  // CDR All Select Box Options
+  const CDRSelectOptions = {
+    field: [
+      { label: "Select Field", value: "" },
+      { label: "A Number", value: "A Number" },
+      { label: "Amount", value: "Amount" },
+      // ... Other field options
+    ],
+    operator: [
+      { label: "Select Operator", value: "" },
+      { label: "is equal to", value: "is equal to" },
+      { label: "is not equal to", value: "is not equal to" },
+      { label: "is less than", value: "is less than" },
+      // ... Other operator options
+    ],
+    source: [
+      { label: "Select Source", value: "" },
+      { label: "Value", value: "Value" },
+      { label: "CDR", value: "CDR" },
+      { label: "Subscriber", value: "Subscriber" },
+      // ... Other source options
+    ],
+    CDRValue: [
+      { label: "Select Value", value: "" },
+      { label: "A Number", value: "A Number" },
+      { label: "Amount", value: "Amount" },
+      { label: "B Handset ID", value: "B Handset ID" },
+      // ... Other value options
+    ],
+    SubscriberValue: [
+      { label: "Select Value", value: "" },
+      { label: "AccountID", value: "AccountID" },
+      { label: "Activation Date", value: "Activation Date" },
+      { label: "Balance", value: "Balance" },
+      // ... Other value options
+    ],
+  };
+
+  // Subscriber All Select Box Options
+  const SubscriberSelectOptions = {
+    field: [
+      { label: "Select Field", value: "" },
+      { label: "A Number", value: "A Number" },
+      { label: "Amount", value: "Amount" },
+      // ... Other field options
+    ],
+    operator: [
+      { label: "Select Operator", value: "" },
+      { label: "is equal to", value: "is equal to" },
+      { label: "is not equal to", value: "is not equal to" },
+      { label: "is less than", value: "is less than" },
+      // ... Other operator options
+    ],
+    source: [
+      { label: "Select Source", value: "" },
+      { label: "Value", value: "Value" },
+      { label: "CDR", value: "CDR" },
+      { label: "Subscriber", value: "Subscriber" },
+      // ... Other source options
+    ],
+    CDRValue: [
+      { label: "Select Value", value: "" },
+      { label: "A Number", value: "A Number" },
+      { label: "Amount", value: "Amount" },
+      { label: "B Handset ID", value: "B Handset ID" },
+      // ... Other value options
+    ],
+    SubscriberValue: [
+      { label: "Select Value", value: "" },
+      { label: "AccountID", value: "AccountID" },
+      { label: "Activation Date", value: "Activation Date" },
+      { label: "Balance", value: "Balance" },
+      // ... Other value options
+    ],
+  };
+
+  // Subset All Select Box Options
+  const SubsetSelectOptions = {
+    field: [
+      { label: "Select Subset", value: "" },
+      { label: "Calltype = All", value: "Calltype = All" },
+      { label: "Calltype = International", value: "Calltype = International" },
+      // ... Other field options
+    ],
+    operator: [
+      { label: "Select Operator", value: "" },
+      { label: "is true", value: "is true" },
+      { label: "is false", value: "is false" },
+    ],
+  };
+
+  const render = () => {
+    // To clear the previous data
+    filterRulesContainer.innerHTML = "";
+
+    // Array Containing all the rules mapping to show on screen
+    filterRules.forEach((rule, index) => {
+      if (rule.type === "Group") {
+        const flexContainer = createDOMElement("div", {
+          class: "flex items-center mt-2",
+        });
+        filterRulesContainer.appendChild(flexContainer);
+
+        // arrow icon
+        const arrow = createDOMElement("i", {
+          class: "fas fa-arrow-right mr-2",
+        });
+        flexContainer.appendChild(arrow);
+
+        // Select box for OR/AND
+        const selectOptions = [
+          { label: "OR", value: "OR" },
+          { label: "AND", value: "AND" },
+        ];
+        const selectElement = createSelectWithOptions(
+          selectOptions,
+          (e) => console.log(e.target.value), // Change handler function
+          "bg-gray-100"
+        );
+        flexContainer.appendChild(selectElement);
+
+        // Icon: fa-balance-scale
+        const balanceIcon = createDOMElement("i", {
+          class: "fas fa-balance-scale ml-3 text-green-900 cursor-pointer",
+          id: "singleRule",
+        });
+        balanceIcon.addEventListener("click", () =>
+          handleAddRuleToGroup(index)
+        );
+        flexContainer.appendChild(balanceIcon);
+
+        // Icon: fa-users
+        const usersIcon = createDOMElement("i", {
+          class: "fas fa-users ml-3 text-green-600 cursor-pointer",
+          id: "groupRule",
+        });
+        usersIcon.addEventListener("click", () => handleAddGroupToGroup(index));
+        flexContainer.appendChild(usersIcon);
+
+        const removeGroupButton = createDOMElement("button", {
+          class: "group-rule-type flex items-center",
+        });
+        // remove group
+        removeGroupButton.addEventListener("click", () =>
+          handleDeleteGroup(index)
+        );
+        flexContainer.appendChild(removeGroupButton);
+
+        const removeGroupIcon = createDOMElement("i", {
+          class: "fas fa-times ml-3 custom-red-icon text-red-700",
+        });
+        removeGroupButton.appendChild(removeGroupIcon);
+
+        rule.rules.forEach((rule, nestedIndex) => {
+          if (rule.type === "Group") {
+            //
+            //
+            //
+            const flexContainer = createDOMElement("div", {
+              class: "flex items-center mt-2",
+            });
+            filterRulesContainer.appendChild(flexContainer);
+
+            // arrow icon
+            const arrow = createDOMElement("i", {
+              class: "fas fa-arrow-right ml-3 mr-2",
+            });
+            flexContainer.appendChild(arrow);
+
+            // Select box for OR/AND
+            const selectOptions = [
+              { label: "OR", value: "OR" },
+              { label: "AND", value: "AND" },
+            ];
+            const selectElement = createSelectWithOptions(
+              selectOptions,
+              (e) => console.log(e.target.value), // Change handler function
+              "bg-gray-100"
+            );
+            flexContainer.appendChild(selectElement);
+
+            // Icon: fa-balance-scale
+            const balanceIcon = createDOMElement("i", {
+              class: "fas fa-balance-scale ml-3 text-green-900 cursor-pointer",
+              id: "singleRule",
+            });
+            balanceIcon.addEventListener("click", () =>
+              handleAddRuleToGroup(nestedIndex)
+            );
+            flexContainer.appendChild(balanceIcon);
+
+            // Icon: fa-users
+            const usersIcon = createDOMElement("i", {
+              class: "fas fa-users ml-3 text-green-600 cursor-pointer",
+              id: "groupRule",
+            });
+            usersIcon.addEventListener("click", () =>
+              handleAddGroupToGroup(index)
+            );
+            flexContainer.appendChild(usersIcon);
+
+            const removeGroupButton = createDOMElement("button", {
+              class: "group-rule-type flex items-center",
+            });
+            removeGroupButton.addEventListener("click", () =>
+              handleDeleteGroupFromGroup(index, nestedIndex)
+            );
+            flexContainer.appendChild(removeGroupButton);
+
+            const removeGroupIcon = createDOMElement("i", {
+              class: "fas fa-times ml-3 custom-red-icon text-red-700",
+            });
+            removeGroupButton.appendChild(removeGroupIcon);
+
+            //  complete this to show the rules of nested group?
+
+            //
+            //
+            //
+          } else {
+            const filterRule = createDOMElement("div", {
+              class: "single-rule mt-1 flex items-center",
+            });
+            filterRulesContainer.appendChild(filterRule);
+
+            // arrow icon
+            const arrow = createDOMElement("i", {
+              class: "fas fa-arrow-right ml-3 mr-2",
+            });
+            filterRule.appendChild(arrow);
+
+            // Column Select box when rule button click
+            const filterColumn = createSelectWithOptions(column, (e) =>
+              handleRuleChangeForGroup(
+                index,
+                nestedIndex,
+                "column",
+                e.target.value
+              )
+            );
+            filterRule.appendChild(filterColumn);
+            filterColumn.value = rule.column;
+
+            // Conditions according to input of column select box :
+            if (rule.column === "CDR") {
+              const filterField = createSelectWithOptions(
+                CDRSelectOptions.field,
+                (e) =>
+                  handleRuleChangeForGroup(
+                    index,
+                    nestedIndex,
+                    "field",
+                    e.target.value
+                  ),
+                "blue"
+              );
+              filterRule.appendChild(filterField);
+              filterField.value = rule.field;
+
+              // to show after setting value of field
+              if (rule.field) {
+                const filterOperator = createSelectWithOptions(
+                  CDRSelectOptions.operator,
+                  (e) =>
+                    handleRuleChangeForGroup(
+                      index,
+                      nestedIndex,
+                      "operator",
+                      e.target.value
+                    ),
+                  "green"
+                );
+                filterRule.appendChild(filterOperator);
+                filterOperator.value = rule.operator;
+              }
+
+              // to show after setting value of field and operator
+              if (rule.field && rule.operator) {
+                const filterSource = createSelectWithOptions(
+                  CDRSelectOptions.source,
+                  (e) =>
+                    handleRuleChangeForGroup(
+                      index,
+                      nestedIndex,
+                      "source",
+                      e.target.value
+                    ),
+                  "gray"
+                );
+                filterRule.appendChild(filterSource);
+                filterSource.value = rule.source;
+
+                // conditions on the basis of input of source select box
+                if (rule.source === "Value") {
+                  const inputValue = "text";
+                  const filterValue = createDOMElement("input", {
+                    type: inputValue,
+                    class: "filter-value bg-gray-100 text-black-100",
+                    placeholder: "Enter Value",
+                    value: rule.value,
+                  });
+                  filterValue.addEventListener("change", (e) =>
+                    handleRuleChangeForGroup(
+                      index,
+                      nestedIndex,
+                      "value",
+                      e.target.value
+                    )
+                  );
+                  filterRule.appendChild(filterValue);
+                } else if (rule.source === "CDR") {
+                  const filterValue = createSelectWithOptions(
+                    CDRSelectOptions.CDRValue,
+                    (e) =>
+                      handleRuleChangeForGroup(
+                        index,
+                        nestedIndex,
+                        "value",
+                        e.target.value
+                      ),
+                    "gray"
+                  );
+                  filterRule.appendChild(filterValue);
+                  filterValue.value = rule.value;
+                } else if (rule.source === "Subscriber") {
+                  const filterValue = createSelectWithOptions(
+                    CDRSelectOptions.SubscriberValue,
+                    (e) =>
+                      handleRuleChangeForGroup(
+                        index,
+                        nestedIndex,
+                        "value",
+                        e.target.value
+                      ),
+                    "gray"
+                  );
+                  filterRule.appendChild(filterValue);
+                  filterValue.value = rule.value;
+                }
+              }
+            } else if (rule.column === "Subscriber") {
+              // ... Handling for Subscriber column
+              const filterField = createSelectWithOptions(
+                SubscriberSelectOptions.field,
+                (e) =>
+                  handleRuleChangeForGroup(
+                    index,
+                    nestedIndex,
+                    "field",
+                    e.target.value
+                  ),
+                "blue"
+              );
+              filterRule.appendChild(filterField);
+              filterField.value = rule.field;
+
+              // to show after setting value of field
+              if (rule.field) {
+                const filterOperator = createSelectWithOptions(
+                  SubscriberSelectOptions.operator,
+                  (e) =>
+                    handleRuleChangeForGroup(
+                      index,
+                      nestedIndex,
+                      "operator",
+                      e.target.value
+                    ),
+                  "green"
+                );
+                filterRule.appendChild(filterOperator);
+                filterOperator.value = rule.operator;
+              }
+
+              // to show after setting value of field and operator
+              if (rule.field && rule.operator) {
+                const filterSource = createSelectWithOptions(
+                  SubscriberSelectOptions.source,
+                  (e) =>
+                    handleRuleChangeForGroup(
+                      index,
+                      nestedIndex,
+                      "source",
+                      e.target.value
+                    ),
+                  "gray"
+                );
+                filterRule.appendChild(filterSource);
+                filterSource.value = rule.source;
+
+                // conditions on the basis of input of source select box
+                if (rule.source === "Value") {
+                  const inputValue = "text";
+                  const filterValue = createDOMElement("input", {
+                    type: inputValue,
+                    class: "filter-value bg-gray-100 text-black",
+                    placeholder: "Enter Value",
+                    value: rule.value,
+                  });
+                  filterValue.addEventListener("change", (e) =>
+                    handleRuleChangeForGroup(
+                      index,
+                      nestedIndex,
+                      "value",
+                      e.target.value
+                    )
+                  );
+                  filterRule.appendChild(filterValue);
+                } else if (rule.source === "CDR") {
+                  const filterValue = createSelectWithOptions(
+                    SubscriberSelectOptions.CDRValue,
+                    (e) =>
+                      handleRuleChangeForGroup(
+                        index,
+                        nestedIndex,
+                        "value",
+                        e.target.value
+                      ),
+                    "gray"
+                  );
+                  filterRule.appendChild(filterValue);
+                  filterValue.value = rule.value;
+                } else if (rule.source === "Subscriber") {
+                  const filterValue = createSelectWithOptions(
+                    SubscriberSelectOptions.SubscriberValue,
+                    (e) =>
+                      handleRuleChangeForGroup(
+                        index,
+                        nestedIndex,
+                        "value",
+                        e.target.value
+                      ),
+                    "gray"
+                  );
+                  filterRule.appendChild(filterValue);
+                  filterValue.value = rule.value;
+                }
+              }
+            } else if (rule.column === "Subset") {
+              // ... Handling for Subset column
+              const filterField = createSelectWithOptions(
+                SubsetSelectOptions.field,
+                (e) =>
+                  handleRuleChangeForGroup(
+                    index,
+                    nestedIndex,
+                    "field",
+                    e.target.value
+                  ),
+                "blue"
+              );
+              filterRule.appendChild(filterField);
+              filterField.value = rule.field;
+
+              if (filterField.value !== "") {
+                const filterOperator = createSelectWithOptions(
+                  SubsetSelectOptions.operator,
+                  (e) =>
+                    handleRuleChangeForGroup(
+                      index,
+                      nestedIndex,
+                      "operator",
+                      e.target.value
+                    ),
+                  "green"
+                );
+                filterRule.appendChild(filterOperator);
+                filterOperator.value = rule.operator;
+              }
+            }
+
+            const deleteRuleButton = createDOMElement("button", {
+              class: "delete-rule ml-3",
+            });
+            deleteRuleButton.addEventListener("click", () =>
+              handleDeleteRuleFromGroup(index, nestedIndex)
+            );
+            filterRule.appendChild(deleteRuleButton);
+
+            const deleteRuleIcon = createDOMElement("i", {
+              class: "fas fa-times custom-red-icon text-red-700",
+            });
+            deleteRuleButton.appendChild(deleteRuleIcon);
+          }
+        });
+      } else {
+        const filterRule = createDOMElement("div", {
+          class: "single-rule mt-1 flex items-center",
+        });
+        filterRulesContainer.appendChild(filterRule);
+
+        // arrow icon
+        const arrow = createDOMElement("i", {
+          class: "fas fa-arrow-right mr-2",
+        });
+        filterRule.appendChild(arrow);
+
+        // Column Select box when rule button click
+        const filterColumn = createSelectWithOptions(column, (e) =>
+          handleRuleChange(index, "column", e.target.value)
+        );
+        filterRule.appendChild(filterColumn);
+        filterColumn.value = rule.column;
+
+        // Conditions according to input of column select box :
+        if (rule.column === "CDR") {
+          const filterField = createSelectWithOptions(
+            CDRSelectOptions.field,
+            (e) => handleRuleChange(index, "field", e.target.value),
+            "blue"
+          );
+          filterRule.appendChild(filterField);
+          filterField.value = rule.field;
+
+          // to show after setting value of field
+          if (rule.field) {
+            const filterOperator = createSelectWithOptions(
+              CDRSelectOptions.operator,
+              (e) => handleRuleChange(index, "operator", e.target.value),
+              "green"
+            );
+            filterRule.appendChild(filterOperator);
+            filterOperator.value = rule.operator;
+          }
+
+          // to show after setting value of field and operator
+          if (rule.field && rule.operator) {
+            const filterSource = createSelectWithOptions(
+              CDRSelectOptions.source,
+              (e) => handleRuleChange(index, "source", e.target.value),
+              "gray"
+            );
+            filterRule.appendChild(filterSource);
+            filterSource.value = rule.source;
+
+            // conditions on the basis of input of source select box
+            if (rule.source === "Value") {
+              const inputValue = "text";
+              const filterValue = createDOMElement("input", {
+                type: inputValue,
+                class: "filter-value bg-gray-100 text-black-100",
+                placeholder: "Enter Value",
+                value: rule.value,
+              });
+              filterValue.addEventListener("change", (e) =>
+                handleRuleChange(index, "value", e.target.value)
+              );
+              filterRule.appendChild(filterValue);
+            } else if (rule.source === "CDR") {
+              const filterValue = createSelectWithOptions(
+                CDRSelectOptions.CDRValue,
+                (e) => handleRuleChange(index, "value", e.target.value),
+                "gray"
+              );
+              filterRule.appendChild(filterValue);
+              filterValue.value = rule.value;
+            } else if (rule.source === "Subscriber") {
+              const filterValue = createSelectWithOptions(
+                CDRSelectOptions.SubscriberValue,
+                (e) => handleRuleChange(index, "value", e.target.value),
+                "gray"
+              );
+              filterRule.appendChild(filterValue);
+              filterValue.value = rule.value;
+            }
+          }
+        } else if (rule.column === "Subscriber") {
+          // ... Handling for Subscriber column
+          const filterField = createSelectWithOptions(
+            SubscriberSelectOptions.field,
+            (e) => handleRuleChange(index, "field", e.target.value),
+            "blue"
+          );
+          filterRule.appendChild(filterField);
+          filterField.value = rule.field;
+
+          // to show after setting value of field
+          if (rule.field) {
+            const filterOperator = createSelectWithOptions(
+              SubscriberSelectOptions.operator,
+              (e) => handleRuleChange(index, "operator", e.target.value),
+              "green"
+            );
+            filterRule.appendChild(filterOperator);
+            filterOperator.value = rule.operator;
+          }
+
+          // to show after setting value of field and operator
+          if (rule.field && rule.operator) {
+            const filterSource = createSelectWithOptions(
+              SubscriberSelectOptions.source,
+              (e) => handleRuleChange(index, "source", e.target.value),
+              "gray"
+            );
+            filterRule.appendChild(filterSource);
+            filterSource.value = rule.source;
+
+            // conditions on the basis of input of source select box
+            if (rule.source === "Value") {
+              const inputValue = "text";
+              const filterValue = createDOMElement("input", {
+                type: inputValue,
+                class: "filter-value bg-gray-100 text-black",
+                placeholder: "Enter Value",
+                value: rule.value,
+              });
+              filterValue.addEventListener("change", (e) =>
+                handleRuleChange(index, "value", e.target.value)
+              );
+              filterRule.appendChild(filterValue);
+            } else if (rule.source === "CDR") {
+              const filterValue = createSelectWithOptions(
+                SubscriberSelectOptions.CDRValue,
+                (e) => handleRuleChange(index, "value", e.target.value),
+                "gray"
+              );
+              filterRule.appendChild(filterValue);
+              filterValue.value = rule.value;
+            } else if (rule.source === "Subscriber") {
+              const filterValue = createSelectWithOptions(
+                SubscriberSelectOptions.SubscriberValue,
+                (e) => handleRuleChange(index, "value", e.target.value),
+                "gray"
+              );
+              filterRule.appendChild(filterValue);
+              filterValue.value = rule.value;
+            }
+          }
+        } else if (rule.column === "Subset") {
+          // ... Handling for Subset column
+          const filterField = createSelectWithOptions(
+            SubsetSelectOptions.field,
+            (e) => handleRuleChange(index, "field", e.target.value),
+            "blue"
+          );
+          filterRule.appendChild(filterField);
+          filterField.value = rule.field;
+
+          if (filterField.value !== "") {
+            const filterOperator = createSelectWithOptions(
+              SubsetSelectOptions.operator,
+              (e) => handleRuleChange(index, "operator", e.target.value),
+              "green"
+            );
+            filterRule.appendChild(filterOperator);
+            filterOperator.value = rule.operator;
+          }
+        }
+
+        const deleteRuleButton = createDOMElement("button", {
+          class: "delete-rule ml-3",
+        });
+        deleteRuleButton.addEventListener("click", () =>
+          handleDeleteRule(index)
+        );
+        filterRule.appendChild(deleteRuleButton);
+
+        const deleteRuleIcon = createDOMElement("i", {
+          class: "fas fa-times custom-red-icon text-red-700",
+        });
+        deleteRuleButton.appendChild(deleteRuleIcon);
+      }
+    });
+  };
+</script>

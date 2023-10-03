@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DataTable with Bootstrap Modals</title>
+    <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include DataTables CSS and JS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css"
+    />
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <!-- Include Bootstrap CSS and JS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
+    <!-- DataTable -->
+    <table id="myDataTable" class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Location</th>
+          <!-- Add more columns as needed -->
+        </tr>
+      </thead>
+      <tbody>
+        <!-- DataTable rows will be populated here -->
+        <!-- <tr> -->
+        <!-- <td>
+            <a
+              href="#"
+              class="btn btn-primary open-filter-modal"
+              data-column-index="0"
+              >Filter</a
+            >
+          </td>
+          <td>
+            <a
+              href="#"
+              class="btn btn-primary open-filter-modal"
+              data-column-index="1"
+              >Filter</a
+            >
+          </td>
+          <td>
+            <a
+              href="#"
+              class="btn btn-primary open-filter-modal"
+              data-column-index="2"
+              >Filter</a
+            >
+          </td> -->
+        <!-- Add more columns as needed -->
+        <!-- </tr> -->
+
+        <tr>
+          <td>Shayan</td>
+          <td>20</td>
+          <td>Islamabad</td>
+        </tr>
+        <tr>
+          <td>Ijlal</td>
+          <td>21</td>
+          <td>Karachi</td>
+        </tr>
+        <tr>
+          <td>Usama</td>
+          <td>23</td>
+          <td>Islamabad</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Dynamic Filter Modals -->
+    <script>
+      $(document).ready(function () {
+        var dataTable = $("#myDataTable").DataTable();
+
+        // Function to apply the select filter
+        function applySelectFilter(columnIndex, selectVal) {
+          dataTable.column(columnIndex).search(selectVal).draw();
+        }
+
+        // Function to apply the input filter
+        function applyInputFilter(columnIndex, inputVal) {
+          dataTable.column(columnIndex).search(inputVal).draw();
+        }
+
+        // Create dynamic filter modals for each column
+        dataTable.columns().every(function (index) {
+          var columnIndex = index;
+          var columnName = dataTable.columns(index).header().textContent;
+          console.log("ColumnName", columnName);
+
+          var modalHtml = `
+                    <div class="modal fade" id="${columnName}FilterModal" tabindex="-1" role="dialog" aria-labelledby="${columnName}FilterModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="${columnName}FilterModalLabel">${columnName} Filter</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="text" class="form-control" id="${columnName}Input" placeholder="Search ${columnName}" />
+                                    <select class="form-control" id="${columnName}Select">
+                                        <option value="">All ${columnName}s</option>
+                                        <!-- Add options dynamically based on unique values in the data -->
+                                        ${getFilterOptions(
+                                          dataTable,
+                                          columnIndex
+                                        )}
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-primary apply-filters" data-dismiss="modal" data-column-index="${columnIndex}">Apply</button>
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+
+          // Append the modal HTML to the body
+          $("body").append(modalHtml);
+
+          // Create dynamic filter buttons
+          var buttonHtml = `<a href="#" class="btn btn-primary open-filter-modal" data-column-index="${columnIndex}">Filter</a>`;
+          dataTable.column(columnIndex).header().innerHTML += buttonHtml;
+
+          // Attach click event handler for the "Filter" buttons
+          $(".open-filter-modal[data-column-index='" + columnIndex + "']").on(
+            "click",
+            function () {
+              var columnIndex = $(this).data("column-index");
+              var columnName = dataTable
+                .columns(columnIndex)
+                .header().textContent;
+              $("#" + columnName + "FilterModal").modal("show");
+            }
+          );
+
+          // Attach click event handler for the "Apply" button in each modal
+          $("#" + columnName + "FilterModal .apply-filters").on(
+            "click",
+            function () {
+              var columnIndex = $(this).data("column-index");
+              var columnName = dataTable
+                .columns(columnIndex)
+                .header().textContent;
+              var inputSelector = "#" + columnName + "Input";
+              var selectSelector = "#" + columnName + "Select";
+
+              var inputVal = $(inputSelector).val();
+              var selectVal = $(selectSelector).val();
+
+              // Apply both input and select filters
+              if (inputVal) {
+                applyInputFilter(columnIndex, inputVal);
+              } else if (selectVal) {
+                applySelectFilter(columnIndex, selectVal);
+              }
+
+              $("#" + columnName + "FilterModal").modal("hide"); // Close the modal
+            }
+          );
+        });
+
+        // Function to generate filter options based on unique values in the data
+        // Function to generate filter options based on unique values in the data
+        function getFilterOptions(dataTable, columnIndex) {
+          var uniqueValues = dataTable
+            .column(columnIndex)
+            .data()
+            .unique()
+            .sort()
+            .toArray();
+
+          var selectOptions = uniqueValues.map((value) => {
+            return `<option value="${value}">${value}</option>`;
+          });
+
+          return selectOptions.join("");
+        }
+      });
+    </script>
+  </body>
+</html>
